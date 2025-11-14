@@ -171,7 +171,6 @@ function tryRunAsAdmin(executable: string, args: string[], callback: (success: b
                 'sudo'
             ];
 
-            let tried = false;
 
             (function tryNext(index = 0) {
                 if (index >= methods.length) {
@@ -187,7 +186,6 @@ function tryRunAsAdmin(executable: string, args: string[], callback: (success: b
                 }
 
                 log.info(`Trying to elevate with: ${method}`);
-                tried = true;
 
                 const elevated = spawn(method, [executable, ...args], {
                     env,

@@ -207,11 +207,19 @@ export function initTray(browserWindow: BrowserWindow): void {
     });
 
     // 初始化tray
+    let trayPath: string;
+    if (isDev) {
+        // 开发环境直接用项目里的 public
+        trayPath = path.join(__dirname, '../../public', 'tray.png');
+    } else {
+        // 打包后用 resourcesPath
+        trayPath = path.join(process.resourcesPath, 'tray.png');
+    }
     let trayImage: any;
     if (process.platform === 'darwin') {
-        trayImage = nativeImage.createFromPath(path.join(__dirname, 'tray.png')).resize({width: 16, height: 16});
+        trayImage = nativeImage.createFromPath(trayPath).resize({width: 16, height: 16});
     } else {
-        trayImage = nativeImage.createFromPath(path.join(__dirname, 'tray.png')).resize({width: 32, height: 32});
+        trayImage = nativeImage.createFromPath(trayPath).resize({width: 32, height: 32});
     }
     tray = new Tray(trayImage);
     tray.setToolTip('Pandora-Box');
