@@ -21,7 +21,7 @@ const config: ForgeConfig = {
         icon: 'build/appicon',
         extraResource,
         extendInfo: {
-            LSMinimumSystemVersion: '10.13.0',
+            LSMinimumSystemVersion: '11.0',
         },
         appBundleId: 'com.snakem982.pandora-box',
         protocols: [
