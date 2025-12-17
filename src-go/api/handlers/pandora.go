@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"errors"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
+	"github.com/metacubex/chi"
+	"github.com/metacubex/chi/render"
+	"github.com/metacubex/http"
 	"github.com/metacubex/mihomo/component/process"
 	"github.com/metacubex/mihomo/hub/executor"
 	"github.com/metacubex/mihomo/log"
@@ -15,7 +16,6 @@ import (
 	"github.com/snakem982/pandora-box/pkg/constant"
 	sys "github.com/snakem982/pandora-box/pkg/sys/proxy"
 	"github.com/snakem982/pandora-box/pkg/utils"
-	"net/http"
 	"net/netip"
 	"os"
 	"strings"

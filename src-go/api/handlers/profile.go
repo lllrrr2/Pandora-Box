@@ -3,13 +3,13 @@ package handlers
 import (
 	"github.com/snakem982/pandora-box/api/job"
 	"github.com/snakem982/pandora-box/pkg/proxy"
-	"net/http"
 	"path/filepath"
 	"sort"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
+	"github.com/metacubex/chi"
+	"github.com/metacubex/chi/render"
+	"github.com/metacubex/http"
 	"github.com/metacubex/mihomo/hub/route"
 	"github.com/metacubex/mihomo/log"
 	"github.com/snakem982/pandora-box/api/models"
