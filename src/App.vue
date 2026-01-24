@@ -20,6 +20,7 @@
       <router-view/>
       <MyDrop/>
     </div>
+    <MyDeeplink/>
   </div>
 </template>
 

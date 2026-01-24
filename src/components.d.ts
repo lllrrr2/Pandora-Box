@@ -81,6 +81,7 @@ declare module 'vue' {
     MyBottom: typeof import('./components/menu/MyBottom.vue')['default']
     MyChart: typeof import('./components/home/MyChart.vue')['default']
     MyConfig: typeof import('./components/setting/MyConfig.vue')['default']
+    MyDeeplink: typeof import('./components/MyDeeplink.vue')['default']
     MyDrop: typeof import('./components/MyDrop.vue')['default']
     MyEditor: typeof import('./components/MyEditor.vue')['default']
     MyEvent: typeof import('./components/MyEvent.vue')['default']

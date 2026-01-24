@@ -48,7 +48,7 @@ contextBridge.exposeInMainWorld('pxOs', () => {
 });
 
 // 打开配置目录
-contextBridge.exposeInMainWorld('pxConfigDir', (url: string) => shell.openPath(url));
+contextBridge.exposeInMainWorld('openPxConfigDir', (url: string) => shell.openPath(url));
 
 // 获取剪贴板内容
 contextBridge.exposeInMainWorld('pxClipboard', () => clipboard.readText());
