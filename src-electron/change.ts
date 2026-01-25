@@ -9,12 +9,15 @@ import path from "path";
 export async function doChange(mainWindow: BrowserWindow, data: string) {
     try {
         // 进行目录迁移
-        const destDir = path.join(data, 'Pandora-Box-V3');
-        await fs.move(log.getAppConfigDir(), destDir, {overwrite: true});
-        console.log('目录移动成功！新路径：', destDir);
+        let destDir = data
+        if (!data.endsWith("Pandora-Box-V3")) {
+            destDir = path.join(data, 'Pandora-Box-V3');
+            await fs.move(log.getAppConfigDir(), destDir, {overwrite: true});
+            console.log('目录移动成功！新路径：', destDir);
+        }
         // 进行重启前准备
         // 前端日志设置
-        storeSet("appConfigDir", data)
+        storeSet("appConfigDir", path.dirname(destDir))
         log.initLog()
         // 重启后端
         // 等待 backend 传来的 port 和 secret

@@ -70,8 +70,10 @@ async function changePxConfigDir() {
   const preConfigDir = res[0] as string
   // 判断目录是否可用
   if (preConfigDir.includes("Pandora-Box-V3")) {
-    pWarning(t('setting.px.change-warn'))
-    return
+    if (!preConfigDir.endsWith("Pandora-Box-V3")) {
+      pWarning(t('setting.px.change-warn'))
+      return
+    }
   }
   // 进行目录修改
   await pLoading(t('setting.px.change-loading'), () => {
