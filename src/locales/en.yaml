@@ -62,6 +62,7 @@ drag:
   size: Only allowed to import single file
   add: Importing...
   success: Import Success
+  select: Click here to select
 
 home:
   download: Download

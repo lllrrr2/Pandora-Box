@@ -28,6 +28,7 @@ declare module 'vue' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
     IconEpArrowLeft: typeof import('~icons/ep/arrow-left')['default']
     IconEpArrowRight: typeof import('~icons/ep/arrow-right')['default']
     IconEpCloseBold: typeof import('~icons/ep/close-bold')['default']

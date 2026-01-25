@@ -62,6 +62,7 @@ drag:
   size: 只允许单文件导入
   add: 导入中。。。
   success: 导入成功
+  select: 点击这里选择文件
 
 home:
   download: 下载

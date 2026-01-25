@@ -66,6 +66,7 @@ function handlePaste() {
 
 function openFile() {
   webStore.dnd = true
+  webStore.dSelect = true
 }
 
 // 头部显示
