@@ -12,8 +12,16 @@ export async function doChange(mainWindow: BrowserWindow, data: string) {
         let destDir = data
         if (!data.endsWith("Pandora-Box-V3")) {
             destDir = path.join(data, 'Pandora-Box-V3');
-            await fs.move(log.getAppConfigDir(), destDir, {overwrite: true});
-            console.log('目录移动成功！新路径：', destDir);
+            if (log.getAppConfigDir() !== destDir) {
+                await fs.move(log.getAppConfigDir(), destDir, {overwrite: true});
+                console.log('目录移动成功！新路径：', destDir);
+            }
+        } else {
+            const files = await fs.readdir(destDir);
+            if (files.length === 0) {
+                await fs.move(log.getAppConfigDir(), destDir, {overwrite: true});
+                console.log('目录移动成功！新路径：', destDir);
+            }
         }
         // 进行重启前准备
         // 前端日志设置
