@@ -20,7 +20,7 @@ const agents = [
 
 export function setRandomUA(session: any) {
     const agent = agents[Math.floor(Math.random() * agents.length)];
-    session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+    session.defaultSession.webRequest.onBeforeSendHeaders((details: any, callback: any) => {
         details.requestHeaders['Referer'] = new URL(details.url).origin // 只发送域名
         details.requestHeaders['User-Agent'] = agent.ua;
         details.requestHeaders['sec-ch-ua-platform'] = agent.platform;

@@ -63,7 +63,7 @@ function checkAdminRights(callback: any) {
 // 开启后端
 export function startBackend(addr: string) {
     const backendPath = getBackendPath();
-    const args = ['-addr=' + addr, '-home=' + encodeURIComponent(log.getHomeDir())];
+    const args = ['-addr=' + addr, '-home=' + encodeURIComponent(log.getAppConfigDir())];
 
     // 检查管理权限
     checkAdminRights((isAdmin: boolean) => {

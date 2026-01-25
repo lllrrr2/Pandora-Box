@@ -63,6 +63,7 @@
     "electron-store": "^11.0.2",
     "element-plus": "^2.11.7",
     "express": "^5.1.0",
+    "fs-extra": "^11.3.3",
     "lodash": "^4.17.21",
     "pinia": "3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",

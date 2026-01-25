@@ -1,14 +1,16 @@
 import Store from 'electron-store';
 import path from "path";
-import {ipcMain} from "electron";
-import log from './log';
+import {app, ipcMain} from "electron";
+
+// electron 用户默认目录
+const userDataDir = app.getPath('userData')
 
 let store: Store
 
 // 初始化数据库
-export function initStore(home: string) {
+export function initStore() {
     store = new Store({
-        cwd: path.join(home, 'px-electron.db')
+        cwd: path.join(userDataDir, 'px-electron.db')
     });
 
     ipcMain.handle('store:get', (event, key) => {
@@ -18,8 +20,6 @@ export function initStore(home: string) {
     ipcMain.handle('store:set', (event, key, value) => {
         store.set(key, value);
     });
-
-    log.info("数据库初始化完成")
 }
 
 // 从数据库获取数据

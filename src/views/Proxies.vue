@@ -451,6 +451,7 @@ watch(() => proxiesStore.now, async () => {
   cursor: pointer;
   box-shadow: var(--left-nav-shadow);
   white-space: nowrap;
+  font-family: inherit;
 }
 
 .proxy-group-title:hover,

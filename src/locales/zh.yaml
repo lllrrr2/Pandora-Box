@@ -112,6 +112,10 @@ setting:
     startup: 开机自启
     dir: 配置目录
     open: 打开
+    change: 修改
+    change-title: 选择配置目录
+    change-warn: 路径中不得含有 "Pandora-Box-V3"
+    change-loading: 目录修改中。。。
     import: 导入
     export: 导出
     update: 软件更新

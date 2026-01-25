@@ -8,9 +8,16 @@ import {initStore, storeGet} from "./store";
 import {isBootAutoLaunch, updateAutoLaunchRegistration, waitForNetworkReady} from "./launch";
 import {deeplink} from "./deeplink";
 import {setRandomUA} from "./ua";
+import {selectDirectory} from "./selector";
 
 // 是否在开发模式
 const isDev = !app.isPackaged;
+
+// 初始化前端数据库
+initStore()
+
+// 初始化日志
+log.initLog()
 
 // 主窗口
 let mainWindow: BrowserWindow;
@@ -62,7 +69,7 @@ const createWindow = (isBoot: boolean) => {
 
     log.info('准备加载页面');
     mainWindow.loadURL(filePath).catch((err) => {
-        log.error('页面加载失败:', err);
+        log.error('加载页面失败:', err);
     });
 
     // 页面加载完成再显示，避免白屏
@@ -100,6 +107,13 @@ ipcMain.on(deeplink.DEEP_LINK_READY_EVENT, (event) => {
 for (const arg of process.argv) {
     deeplink.pushDeeplink(arg)
 }
+
+// 修改配置目录
+ipcMain.handle('select-directory', async (event, options = {}) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    const paths = await selectDirectory(win, options);
+    return paths.length > 0 ? paths : null; // 返回 null 表示取消
+});
 
 // 单例模式
 const gotTheLock = app.requestSingleInstanceLock();
@@ -144,9 +158,6 @@ if (!gotTheLock) {
                 log.info('网络已准备好');
             }
         }
-
-        // 初始化前端数据库
-        initStore(log.getHomeDir())
 
         // 启动前端静态服务
         startServer(resolveReady, startBackend)

@@ -112,6 +112,10 @@ setting:
     startup: Boot Startup
     dir: Config
     open: Open
+    change: Change
+    change-title: Select config directory
+    change-warn: The path must not contain "Pandora-Box-V3"
+    change-loading: Directory is being moved...
     import: Import
     export: Export
     update: Update

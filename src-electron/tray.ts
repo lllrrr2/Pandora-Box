@@ -1,9 +1,9 @@
 // @ts-nocheck
-
 import {app, BrowserWindow, ipcMain, Menu, nativeImage, Tray} from 'electron';
 import path from "node:path";
 import {storeSet} from "./store";
 import {disableAutoLaunch, enableAutoLaunch} from "./launch";
+import {doChange} from "./change";
 
 // 是否在开发模式
 const isDev = !app.isPackaged;
@@ -327,6 +327,11 @@ onWindow("tunAuthTip", function (tunAuthTip) {
     if (tunAuthTip) {
         storeSet("tunAuthTip", tunAuthTip);
     }
+})
+
+// 修改配置目录
+onWindow("doChangeConfigDir", function (value) {
+    return doChange(mainWindow, value)
 })
 
 

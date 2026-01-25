@@ -10,6 +10,15 @@ export async function pLoad(tip: any, callback: any) {
     loading.close();
 }
 
+export async function pLoading(tip: any, callback: any) {
+    const loading = ElLoading.service({
+        lock: true,
+        text: tip,
+        background: "rgba(0, 0, 0, 0.2)",
+    });
+    await callback(loading);
+}
+
 
 export async function copy(textToCopy: any, t: any) {
     try {

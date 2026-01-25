@@ -47,8 +47,9 @@ contextBridge.exposeInMainWorld('pxOs', () => {
     }
 });
 
-// 打开配置目录
+// 打开配置目录 changePxConfigDir
 contextBridge.exposeInMainWorld('openPxConfigDir', (url: string) => shell.openPath(url));
+contextBridge.exposeInMainWorld('changePxConfigDir', (options = {}) => ipcRenderer.invoke('select-directory', options));
 
 // 获取剪贴板内容
 contextBridge.exposeInMainWorld('pxClipboard', () => clipboard.readText());

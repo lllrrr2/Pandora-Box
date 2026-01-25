@@ -112,6 +112,10 @@ setting:
     startup: Автозапуск
     dir: Конфиг
     open: Открыть
+    change: Изменять
+    change-title: Выберите каталог конфигурации
+    change-warn: Путь не должен содержать "Pandora-Box-V3"
+    change-loading: Разработка каталога продолжается...
     import: Импортировать
     export: Экспортировать
     update: Обновить

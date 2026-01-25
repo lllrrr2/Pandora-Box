@@ -4,7 +4,7 @@ import MyPort from "@/components/setting/MyPort.vue";
 import MyTun from "@/components/setting/MyTun.vue";
 import {EditPen} from "@element-plus/icons-vue";
 import {useWebStore} from "@/store/webStore";
-import {copy} from "@/util/pLoad";
+import {copy, pLoading, pWarning} from "@/util/pLoad";
 import {useI18n} from "vue-i18n";
 import {useSettingStore} from "@/store/settingStore";
 import createApi from "@/api";
@@ -56,9 +56,38 @@ watch(() => settingStore.startup, (newValue) => {
 });
 
 // 打开配置目录
-function pxConfigDir() {
+let pxConfigDir = ref("")
+onMounted(async () => {
+  pxConfigDir.value = await api.configDir()
+})
+
+async function changePxConfigDir() {
   // @ts-ignore
-  api.configDir().then(res => window["pxConfigDir"](res))
+  const res = await window["changePxConfigDir"]({'title': t('setting.px.change-title')})
+  if (!res || res[0] === pxConfigDir.value) {
+    return
+  }
+  const preConfigDir = res[0] as string
+  // 判断目录是否可用
+  if (preConfigDir.includes("Pandora-Box-V3")) {
+    pWarning(t('setting.px.change-warn'))
+    return
+  }
+  // 进行目录修改
+  await pLoading(t('setting.px.change-loading'), () => {
+    api.exit().then(res => {
+      if (res && res === "ok") {
+        Events.Emit({name: "doChangeConfigDir", data: preConfigDir})
+      }
+    }).catch(() => {
+      Events.Emit({name: "doChangeConfigDir", data: preConfigDir})
+    })
+  })
+}
+
+function openPxConfigDir() {
+  // @ts-ignore
+  api.configDir().then(res => window["openPxConfigDir"](res))
 }
 
 // 检查更新
@@ -117,7 +146,9 @@ function checkUpdate() {
             <strong>Api :</strong>
             {{ webStore.baseUrl }}
             <el-button
-                @click="copy(webStore.baseUrl,t)">
+                @click="copy(webStore.baseUrl,t)"
+                style="margin-left: 10px"
+            >
               {{ $t('copy.title') }}
             </el-button>
           </li>
@@ -125,7 +156,9 @@ function checkUpdate() {
             <strong>Secret:</strong>
             {{ webStore.secret }}
             <el-button
-                @click="copy(webStore.secret,t)">
+                @click="copy(webStore.secret,t)"
+                style="margin-left: 10px"
+            >
               {{ $t('copy.title') }}
             </el-button>
           </li>
@@ -160,12 +193,22 @@ function checkUpdate() {
             />
           </li>
           <li style="height: 30px">
-            <strong>{{ $t('setting.px.dir') }} :</strong>
-            <el-button @click="pxConfigDir" style="margin-left: 10px">
-              {{ $t('setting.px.open') }}
-            </el-button>
-            <!--            <el-button>{{ $t('setting.px.export') }}</el-button>-->
-            <!--            <el-button>{{ $t('setting.px.import') }}</el-button>-->
+            <el-space>
+              <strong>{{ $t('setting.px.dir') }} :</strong>
+              <el-row class="limit-text">
+                <el-text size="large" truncated>
+                  {{ pxConfigDir }}
+                </el-text>
+              </el-row>
+              <el-button @click="changePxConfigDir" style="margin-left: 10px">
+                {{ $t('setting.px.change') }}
+              </el-button>
+              <el-button @click="openPxConfigDir" style="margin-left: 10px">
+                {{ $t('setting.px.open') }}
+              </el-button>
+              <!--            <el-button>{{ $t('setting.px.export') }}</el-button>-->
+              <!--            <el-button>{{ $t('setting.px.import') }}</el-button>-->
+            </el-space>
           </li>
           <li style="height: 30px">
             <strong>{{ $t('setting.px.update') }} :</strong>
@@ -255,6 +298,19 @@ function checkUpdate() {
 .btn:hover {
   cursor: pointer;
   color: var(--hr-color);
+}
+
+.limit-text {
+  max-width: 300px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:deep(.el-text) {
+  --el-text-color: var(--text-color);
+  color: var(--text-color);
 }
 
 
