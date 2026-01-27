@@ -2,6 +2,7 @@ import {app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, session} f
 import path from 'node:path';
 import {startServer, storeInfo} from "./server";
 import {doQuit, initTray, showWindow} from "./tray";
+import {initMenu} from "./menu"
 import {startBackend} from "./admin";
 import log from './log';
 import {initStore, storeGet} from "./store";
@@ -9,9 +10,6 @@ import {isBootAutoLaunch, updateAutoLaunchRegistration, waitForNetworkReady} fro
 import {deeplink} from "./deeplink";
 import {setRandomUA} from "./ua";
 import {selectDirectory} from "./selector";
-
-// 是否在开发模式
-const isDev = !app.isPackaged;
 
 // 初始化前端数据库
 initStore()
@@ -56,13 +54,17 @@ const createWindow = (isBoot: boolean) => {
 
     mainWindow = new BrowserWindow(windowOptions);
 
-    // 隐藏菜单栏
+    // 隐藏窗口菜单栏
     mainWindow.setMenu(null);
 
+    // 顶部菜单
+    initMenu(mainWindow);
     // 托盘
     initTray(mainWindow);
 
     // 页面加载
+    // 是否在开发模式
+    const isDev = !app.isPackaged;
     const filePath = isDev
         ? `http://localhost:5173?port=${storeInfo.port()}&secret=${storeInfo.secret()}`
         : `http://${storeInfo.listenAddr()}/index.html?port=${storeInfo.port()}&secret=${storeInfo.secret()}`;
@@ -88,12 +90,6 @@ const createWindow = (isBoot: boolean) => {
         mainWindow = null;
     });
 };
-
-// 等待 backend 传来的 port 和 secret
-let resolveReady: () => void;
-const waitForReady = new Promise<void>((resolve) => {
-    resolveReady = resolve;
-});
 
 
 // 监听深度链接事件
@@ -158,6 +154,12 @@ if (!gotTheLock) {
                 log.info('网络已准备好');
             }
         }
+
+        // 等待 backend 传来的 port 和 secret
+        let resolveReady: () => void;
+        const waitForReady = new Promise<void>((resolve) => {
+            resolveReady = resolve;
+        });
 
         // 启动前端静态服务
         startServer(resolveReady, startBackend)
