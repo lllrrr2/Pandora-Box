@@ -121,6 +121,12 @@ setting:
     export: Export
     update: Update
     check: Check
+  shortcut:
+    title: Shortcut
+    show: Show/Hide
+    double: Shortcut keys are not allowed to be single
+    success: Registration successful
+    error: Registration failed, possibly due to the app already being used or incorrect formatting
 
 proxies:
   title: Proxies

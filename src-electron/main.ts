@@ -11,6 +11,7 @@ import {deeplink} from "./deeplink";
 import {setRandomUA} from "./ua";
 import {selectDirectory} from "./selector";
 import {IsDev} from "./common";
+import {initShortcut} from "./shortcut";
 
 // 初始化前端数据库
 initStore()
@@ -62,6 +63,9 @@ const createWindow = (isBoot: boolean) => {
     initMenu(mainWindow);
     // 托盘
     initTray(mainWindow);
+
+    // 快捷键
+    initShortcut(mainWindow)
 
     // 页面加载
     const filePath = IsDev

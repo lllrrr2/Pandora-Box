@@ -195,6 +195,21 @@ function checkUpdate() {
             />
           </li>
           <li style="height: 30px">
+            <strong>
+              {{ $t('setting.shortcut.title') }} :
+            </strong>
+            <el-icon
+                @click="changeMenu('Setting/Shortcut',router)"
+                class="btn">
+              <EditPen/>
+            </el-icon>
+            <el-switch
+                v-model="settingStore.sc_switch"
+                class="set-switch"
+                style="margin-left: 28px"
+            />
+          </li>
+          <li style="height: 30px">
             <el-space>
               <strong>{{ $t('setting.px.dir') }} :</strong>
               <el-row class="limit-text">
@@ -220,7 +235,6 @@ function checkUpdate() {
       </div>
     </el-col>
   </el-row>
-
 
 </template>
 

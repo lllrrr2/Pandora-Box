@@ -70,6 +70,38 @@ Events.On("switchProfiles", async (ev: any) => {
   })
 });
 
+// 注册快捷键
+function registerShortcut() {
+  Events.Emit({
+    name: "shortcut:register",
+    data: {
+      name: "showOrHide",
+      old: "",
+      key: settingStore.sc_hide
+    }
+  })
+}
+
+watch(
+    () => settingStore.sc_switch,
+    (newVal) => {
+      if (newVal) {
+        registerShortcut()
+      } else {
+        Events.Emit({
+          name: "shortcut:unregister-all",
+          data: ""
+        })
+      }
+    })
+
+Events.On("shortcut:result", (success) => {
+  if (!success) {
+    pError(t("setting.shortcut.error"))
+  }
+})
+
+
 onMounted(async () => {
   // 获取初始数据
   const res = await api.getMihomo()
@@ -101,6 +133,11 @@ onMounted(async () => {
     name: "proxy",
     data: menuStore.proxy
   })
+
+  // 注册快捷键
+  if (settingStore.sc_switch) {
+    registerShortcut()
+  }
 })
 
 </script>

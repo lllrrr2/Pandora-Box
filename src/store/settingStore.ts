@@ -10,7 +10,9 @@ export const useSettingStore = defineStore('setting', {
         ipv6: false,
         dns: false,
         startup: false,
-        auth: false
+        auth: false,
+        sc_switch: false,
+        sc_hide: 'Ctrl+W',
     }),
     actions: {
         setTestUrl(testUrl: any) {
@@ -36,6 +38,12 @@ export const useSettingStore = defineStore('setting', {
         },
         setAuth(auth: any) {
             this.auth = auth;
+        },
+        setSc_switch(sc_switch: any) {
+            this.sc_switch = sc_switch;
+        },
+        setSc_hide(sc_hide: any) {
+            this.sc_hide = sc_hide;
         },
     },
     persist: defaultPersist,

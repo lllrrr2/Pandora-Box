@@ -1,9 +1,9 @@
-import {app, BrowserWindow, globalShortcut, ipcMain, Menu, nativeImage, Tray} from 'electron';
+import {app, BrowserWindow, globalShortcut, Menu, nativeImage, Tray} from 'electron';
 import path from "node:path";
 import {storeSet} from "./store";
 import {disableAutoLaunch, enableAutoLaunch} from "./launch";
 import {doChange} from "./change";
-import {AppName, IsDev} from "./common";
+import {AppName, IsDev, onMsg, sendMsg} from "./common";
 
 // --- 状态管理 ---
 let tray: Tray = null;
@@ -43,19 +43,19 @@ function updateTrayMenu() {
             label: state.labels.rule,
             type: 'checkbox',
             checked: state.mode === 'rule',
-            click: () => sendMsg("switchMode", 'rule')
+            click: () => sendMsg(mainWindow, "switchMode", 'rule')
         },
         {
             label: state.labels.global,
             type: 'checkbox',
             checked: state.mode === 'global',
-            click: () => sendMsg("switchMode", 'global')
+            click: () => sendMsg(mainWindow, "switchMode", 'global')
         },
         {
             label: state.labels.direct,
             type: 'checkbox',
             checked: state.mode === 'direct',
-            click: () => sendMsg("switchMode", 'direct')
+            click: () => sendMsg(mainWindow, "switchMode", 'direct')
         },
         {type: 'separator'},
         {
@@ -64,14 +64,19 @@ function updateTrayMenu() {
                 label: p.title,
                 type: 'checkbox',
                 checked: !!p.selected,
-                click: () => sendMsg("switchProfiles", p)
+                click: () => sendMsg(mainWindow, "switchProfiles", p)
             }))
         },
         {type: 'separator'},
-        {label: state.labels.proxy, type: 'checkbox', checked: state.proxy, click: () => sendMsg("switchProxy")},
-        {label: state.labels.tun, type: 'checkbox', checked: state.tun, click: () => sendMsg("switchTun")},
+        {
+            label: state.labels.proxy,
+            type: 'checkbox',
+            checked: state.proxy,
+            click: () => sendMsg(mainWindow, "switchProxy")
+        },
+        {label: state.labels.tun, type: 'checkbox', checked: state.tun, click: () => sendMsg(mainWindow, "switchTun")},
         {type: 'separator'},
-        {label: state.labels.quit, click: () => sendMsg("readyToQuit")},
+        {label: state.labels.quit, click: () => sendMsg(mainWindow, "readyToQuit")},
     ];
 
     tray.setContextMenu(Menu.buildFromTemplate(template));
@@ -117,14 +122,6 @@ export function showWindow() {
     mainWindow?.focus();
 }
 
-
-// --- IPC 消息监听 ---
-const sendMsg = (name: string, ...args: any[]) => {
-    mainWindow?.webContents.send(`px_${name}`, ...args);
-}
-const onMsg = (name: string, cb: (val: any) => void) => {
-    ipcMain.on(`px_${name}`, (_e, val) => cb(val));
-};
 
 export const doQuit = () => {
     if (mainWindow) storeSet('windowBounds', mainWindow.getBounds());

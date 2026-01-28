@@ -4,7 +4,7 @@ import {clipboard, contextBridge, ipcRenderer, shell} from 'electron';
 import os from 'os';
 
 // tray相关
-contextBridge.exposeInMainWorld('pxTray', {
+contextBridge.exposeInMainWorld('pxCommon', {
     on: (name, callback) => {
         const eventName = 'px_' + name;
         // 移除旧监听器，确保只注册一次

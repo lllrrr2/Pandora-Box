@@ -121,6 +121,12 @@ setting:
     export: 导出
     update: 软件更新
     check: 检查
+  shortcut:
+    title: 快捷键
+    show: 显示/隐藏
+    double: 快捷键不允许为单个
+    success: 注册成功
+    error: 注册失败，可能已被占用或格式错误
 
 proxies:
   title: 代理
