@@ -10,6 +10,7 @@ import {isBootAutoLaunch, updateAutoLaunchRegistration, waitForNetworkReady} fro
 import {deeplink} from "./deeplink";
 import {setRandomUA} from "./ua";
 import {selectDirectory} from "./selector";
+import {IsDev} from "./common";
 
 // 初始化前端数据库
 initStore()
@@ -63,9 +64,7 @@ const createWindow = (isBoot: boolean) => {
     initTray(mainWindow);
 
     // 页面加载
-    // 是否在开发模式
-    const isDev = !app.isPackaged;
-    const filePath = isDev
+    const filePath = IsDev
         ? `http://localhost:5173?port=${storeInfo.port()}&secret=${storeInfo.secret()}`
         : `http://${storeInfo.listenAddr()}/index.html?port=${storeInfo.port()}&secret=${storeInfo.secret()}`;
 

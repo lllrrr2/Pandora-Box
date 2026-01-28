@@ -3,15 +3,16 @@ import log from './log';
 import {storeSet} from "./store";
 import {reStartServer, storeInfo} from "./server";
 import {startBackend} from "./admin";
-import {app, BrowserWindow} from "electron";
+import {BrowserWindow} from "electron";
 import path from "path";
+import {AppBaseDir, IsDev} from "./common";
 
 export async function doChange(mainWindow: BrowserWindow, data: string) {
     try {
         // 进行目录迁移
         let destDir = data
-        if (!data.endsWith("Pandora-Box-V3")) {
-            destDir = path.join(data, 'Pandora-Box-V3');
+        if (!data.endsWith(AppBaseDir)) {
+            destDir = path.join(data, AppBaseDir);
             if (log.getAppConfigDir() !== destDir) {
                 await fs.move(log.getAppConfigDir(), destDir, {overwrite: true});
                 console.log('目录移动成功！新路径：', destDir);
@@ -38,10 +39,8 @@ export async function doChange(mainWindow: BrowserWindow, data: string) {
         // 等待后端启动
         await waitForReady;
 
-        // 是否在开发模式
-        const isDev = !app.isPackaged;
         // 页面加载
-        const filePath = isDev
+        const filePath = IsDev
             ? `http://localhost:5173?port=${storeInfo.port()}&secret=${storeInfo.secret()}`
             : `http://${storeInfo.listenAddr()}/index.html?port=${storeInfo.port()}&secret=${storeInfo.secret()}`;
 

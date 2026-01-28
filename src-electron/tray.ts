@@ -3,6 +3,7 @@ import path from "node:path";
 import {storeSet} from "./store";
 import {disableAutoLaunch, enableAutoLaunch} from "./launch";
 import {doChange} from "./change";
+import {AppName, IsDev} from "./common";
 
 // --- 状态管理 ---
 let tray: Tray = null;
@@ -91,14 +92,14 @@ export function initTray(win: BrowserWindow) {
     });
 
     // 图标处理
-    const trayPath = !app.isPackaged
+    const trayPath = IsDev
         ? path.join(__dirname, '../../public', 'tray.png')
         : path.join(process.resourcesPath, 'tray.png');
     const size = process.platform === 'darwin' ? 16 : 32;
     const trayImage = nativeImage.createFromPath(trayPath).resize({width: size, height: size});
 
     tray = new Tray(trayImage);
-    tray.setToolTip('Pandora-Box');
+    tray.setToolTip(AppName);
 
     // 初次渲染菜单
     updateTrayMenu();
@@ -155,6 +156,7 @@ onMsg("translate", (labels) => {
     // 批量更新 label 名称
     Object.keys(labels).forEach(key => {
         const pureKey = key.replace('tray.', '');
+        // @ts-ignore
         if (state.labels[pureKey]) state.labels[pureKey] = labels[key];
     });
     updateTrayMenu();

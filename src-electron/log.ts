@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import log from 'electron-log/main';
 import {storeGet} from "./store";
+import {AppBaseDir} from "./common";
 
 // 获取用户根目录路径
 let userHomeDir = app.getPath('home');
@@ -29,7 +30,7 @@ export default {
         }
 
         // 定义日志目录和文件路径
-        const logDir = path.join(userHomeDir, 'Pandora-Box-V3', 'logs');
+        const logDir = path.join(userHomeDir, AppBaseDir, 'logs');
         const logFilePath = path.join(logDir, 'px-client.log');
 
         // 确保目录存在
@@ -45,6 +46,6 @@ export default {
         log.transports.file.maxSize = 5 * 1024 * 1024;  // 设置最大文件大小为 5MB
     },
     getAppConfigDir: () => {
-        return path.join(userHomeDir, 'Pandora-Box-V3');
+        return path.join(userHomeDir, AppBaseDir);
     }
 };

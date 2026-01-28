@@ -1,4 +1,5 @@
-import {app, BrowserWindow, Menu, MenuItemConstructorOptions} from 'electron';
+import {BrowserWindow, Menu, MenuItemConstructorOptions} from 'electron';
+import {AppName, IsDev} from "./common";
 
 /**
  * 构建并设置应用顶部菜单
@@ -8,7 +9,7 @@ export const initMenu = (mainWindow: BrowserWindow, customTemplate?: MenuItemCon
 
     const defaultTemplate: MenuItemConstructorOptions[] = [
         {
-            label: 'Pandora-Box',
+            label: AppName,
             submenu: [
                 {
                     label: 'Quit',
@@ -22,7 +23,7 @@ export const initMenu = (mainWindow: BrowserWindow, customTemplate?: MenuItemCon
 
     const template = customTemplate || defaultTemplate;
 
-    if (!app.isPackaged) {
+    if (IsDev) {
         template.push({
             label: 'View',
             submenu: [
