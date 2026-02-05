@@ -65,9 +65,7 @@ func Init() {
 	log.Infoln("[Permission] is ok")
 
 	// 释放资源文件
-	_, _ = utils.SaveFile(utils.GetUserHomeDir("geoip.metadb"), GeoIp)
-	_, _ = utils.SaveFile(utils.GetUserHomeDir("GeoSite.dat"), GeoSite)
-	_, _ = utils.SaveFile(utils.GetUserHomeDir("ASN.mmdb"), ASN)
+	releaseGeoData()
 
 	// 释放大模型
 	bin := utils.GetUserHomeDir("Model.bin")
@@ -297,4 +295,22 @@ func SwitchProfile(reload bool) {
 	}
 
 	startCore(profile, reload)
+}
+
+// 释放GEO数据
+func releaseGeoData() {
+	GeoIpPath := utils.GetUserHomeDir("geoip.metadb")
+	if !utils.FileExists(GeoIpPath) {
+		_, _ = utils.SaveFile(GeoIpPath, GeoIp)
+	}
+
+	GeoSitePath := utils.GetUserHomeDir("GeoSite.dat")
+	if !utils.FileExists(GeoSitePath) {
+		_, _ = utils.SaveFile(GeoSitePath, GeoSite)
+	}
+
+	ASNPath := utils.GetUserHomeDir("ASN.mmdb")
+	if !utils.FileExists(ASNPath) {
+		_, _ = utils.SaveFile(ASNPath, ASN)
+	}
 }
