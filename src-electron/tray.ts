@@ -30,6 +30,25 @@ const state = {
 
 // --- 核心逻辑 ---
 
+// 切换规则
+function switchMode(menuItem: any, mode: string) {
+    if (!menuItem.checked) {
+        menuItem.checked = true
+        return
+    }
+    sendMsg(mainWindow, "switchMode", mode)
+}
+
+
+// 切换配置
+function switchProfiles(menuItem: any, profile: any) {
+    if (!menuItem.checked) {
+        menuItem.checked = true
+        return
+    }
+    sendMsg(mainWindow, "switchProfiles", profile)
+}
+
 /**
  * 根据当前 state 重新渲染托盘菜单
  */
@@ -43,19 +62,19 @@ function updateTrayMenu() {
             label: state.labels.rule,
             type: 'checkbox',
             checked: state.mode === 'rule',
-            click: () => sendMsg(mainWindow, "switchMode", 'rule')
+            click: (menuItem: any) => switchMode(menuItem, 'rule')
         },
         {
             label: state.labels.global,
             type: 'checkbox',
             checked: state.mode === 'global',
-            click: () => sendMsg(mainWindow, "switchMode", 'global')
+            click: (menuItem: any) => switchMode(menuItem, 'global')
         },
         {
             label: state.labels.direct,
             type: 'checkbox',
             checked: state.mode === 'direct',
-            click: () => sendMsg(mainWindow, "switchMode", 'direct')
+            click: (menuItem: any) => switchMode(menuItem, 'direct')
         },
         {type: 'separator'},
         {
@@ -64,7 +83,7 @@ function updateTrayMenu() {
                 label: p.title,
                 type: 'checkbox',
                 checked: !!p.selected,
-                click: () => sendMsg(mainWindow, "switchProfiles", p)
+                click: (menuItem: any) => switchProfiles(menuItem, p)
             }))
         },
         {type: 'separator'},
@@ -110,8 +129,8 @@ export function initTray(win: BrowserWindow) {
     updateTrayMenu();
 
     // 点击事件
-    tray.on('click', () => tray?.popUpContextMenu());
-    tray.on('right-click', () => tray?.popUpContextMenu());
+    tray.on('click', () => tray.popUpContextMenu());
+    tray.on('right-click', () => tray.popUpContextMenu());
 }
 
 // --- 工具函数 ---
@@ -163,7 +182,12 @@ onMsg("hide", () => {
     mainWindow?.hide();
     app.dock?.hide();
 });
-onMsg("max", () => mainWindow?.isMaximized() ? mainWindow.unmaximize() : mainWindow?.maximize());
-onMsg("min", () => mainWindow?.minimize());
+onMsg("close", () => app.quit());
+onMsg("max", () => mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize());
+onMsg("min", () => mainWindow.minimize());
 onMsg("boot", (val) => val ? enableAutoLaunch() : disableAutoLaunch());
+onMsg("tunAuthTip", (val) => {
+        if (val) storeSet("tunAuthTip", val)
+    }
+)
 onMsg("doChangeConfigDir", (val) => doChange(mainWindow!, val));
