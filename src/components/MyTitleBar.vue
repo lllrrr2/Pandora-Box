@@ -19,7 +19,7 @@
       </span>
     </el-tooltip>
     <el-tooltip
-        v-if="isMaximized"
+        v-if="barStore.isMax"
         :content="$t('restore')"
         placement="bottom">
       <span class="bar" @click="max">
@@ -63,9 +63,11 @@
 
 <script setup lang="ts">
 import {Events} from "@/runtime";
+import {useBarStore} from "@/store/barStore";
 
-const isMaximized = ref(false)
 const isWindows = ref(false)
+
+const barStore = useBarStore();
 
 onMounted(() => {
   // @ts-ignore
@@ -83,7 +85,7 @@ function minus() {
 }
 
 function max() {
-  isMaximized.value = !isMaximized.value;
+  barStore.setMax(!barStore.isMax);
   Events.Emit({name: "max", data: true});
 }
 
