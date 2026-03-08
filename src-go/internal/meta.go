@@ -64,19 +64,8 @@ func Init() {
 	_ = utils.ModifyFilePermissions(pathTemp, pathTempDst)
 	log.Infoln("[Permission] is ok")
 
-	// 释放资源文件
-	releaseGeoData()
-
-	// 释放大模型
-	bin := utils.GetUserHomeDir("Model.bin")
-	if !utils.FileExists(bin) {
-		_, _ = utils.SaveFile(bin, ModelBin)
-	}
-
-	GeoIp = nil
-	GeoSite = nil
-	ASN = nil
-	ModelBin = nil
+	// 释放运行时需要的资源文件
+	releaseRuntimeData()
 }
 
 var NowConfig *config.Config
@@ -298,19 +287,29 @@ func SwitchProfile(reload bool) {
 }
 
 // 释放GEO数据
-func releaseGeoData() {
-	GeoIpPath := utils.GetUserHomeDir("geoip.metadb")
-	if !utils.FileExists(GeoIpPath) {
-		_, _ = utils.SaveFile(GeoIpPath, GeoIp)
+func releaseRuntimeData() {
+	geoIpPath := utils.GetUserHomeDir("geoip.metadb")
+	if !utils.FileExists(geoIpPath) {
+		_, _ = utils.SaveFile(geoIpPath, GeoIp)
 	}
 
-	GeoSitePath := utils.GetUserHomeDir("GeoSite.dat")
-	if !utils.FileExists(GeoSitePath) {
-		_, _ = utils.SaveFile(GeoSitePath, GeoSite)
+	geoSitePath := utils.GetUserHomeDir("GeoSite.dat")
+	if !utils.FileExists(geoSitePath) {
+		_, _ = utils.SaveFile(geoSitePath, GeoSite)
 	}
 
-	ASNPath := utils.GetUserHomeDir("ASN.mmdb")
-	if !utils.FileExists(ASNPath) {
-		_, _ = utils.SaveFile(ASNPath, ASN)
+	asnPath := utils.GetUserHomeDir("ASN.mmdb")
+	if !utils.FileExists(asnPath) {
+		_, _ = utils.SaveFile(asnPath, ASN)
 	}
+
+	modelBinPath := utils.GetUserHomeDir("Model.bin")
+	if !utils.FileExists(modelBinPath) {
+		_, _ = utils.SaveFile(modelBinPath, ModelBin)
+	}
+
+	GeoIp = nil
+	GeoSite = nil
+	ASN = nil
+	ModelBin = nil
 }
