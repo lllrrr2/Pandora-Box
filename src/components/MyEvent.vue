@@ -8,6 +8,7 @@ import {useI18n} from "vue-i18n";
 import {pError, pLoad, pSuccess} from "@/util/pLoad";
 import {useSettingStore} from "@/store/settingStore";
 import {useWebStore} from "@/store/webStore";
+import {useShortcutStore} from "@/store/shortcutStore";
 
 // i18n
 const {t} = useI18n();
@@ -20,6 +21,7 @@ const api = createApi(proxy);
 const menuStore = useMenuStore();
 const proxiesStore = useProxiesStore();
 const settingStore = useSettingStore();
+const shortcutStore = useShortcutStore();
 const webStore = useWebStore();
 
 // 模式切换
@@ -77,13 +79,13 @@ function registerShortcut() {
     data: {
       name: "showOrHide",
       old: "",
-      key: settingStore.sc_hide
+      key: shortcutStore.sc_hide
     }
   })
 }
 
 watch(
-    () => settingStore.sc_switch,
+    () => shortcutStore.sc_switch,
     (newVal) => {
       if (newVal) {
         registerShortcut()
@@ -97,7 +99,7 @@ watch(
 
 Events.On("shortcut:result", (success) => {
   if (!success) {
-    pError(t("setting.shortcut.error"))
+    pError(t("shortcut.error"))
   }
 })
 
@@ -135,7 +137,7 @@ onMounted(async () => {
   })
 
   // 注册快捷键
-  if (settingStore.sc_switch) {
+  if (shortcutStore.sc_switch) {
     registerShortcut()
   }
 })

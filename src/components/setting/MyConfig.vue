@@ -194,20 +194,17 @@ function checkUpdate() {
                 class="set-switch"
             />
           </li>
-          <li style="height: 30px">
+          <li style="height: 20px;margin-top: 10px">
             <strong>
-              {{ $t('setting.shortcut.title') }} :
+              {{ $t('shortcut.title') }} :
             </strong>
             <el-icon
                 @click="changeMenu('Setting/Shortcut',router)"
-                class="btn">
+                class="btn"
+                style="margin-top: 0;margin-left: 10px"
+            >
               <EditPen/>
             </el-icon>
-            <el-switch
-                v-model="settingStore.sc_switch"
-                class="set-switch"
-                style="margin-left: 28px"
-            />
           </li>
           <li style="height: 30px">
             <el-space>

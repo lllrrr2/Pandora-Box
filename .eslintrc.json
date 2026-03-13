@@ -12,5 +12,16 @@
     "plugin:import/electron",
     "plugin:import/typescript"
   ],
-  "parser": "@typescript-eslint/parser"
+  "parser": "@typescript-eslint/parser",
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "./tsconfig.json"  // 如果有多个 tsconfig，改成数组或具体文件，如 ["./tsconfig.json", "./tsconfig.app.json"]
+      }
+    }
+  },
+  "rules": {
+    "import/no-unresolved": "error"  // 保持开启，resolver 生效后就不会报了
+  }
 }

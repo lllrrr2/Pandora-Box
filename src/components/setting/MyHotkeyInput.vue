@@ -113,7 +113,7 @@ function format(set) {
 
 <style scoped>
 .fake-input {
-  min-width: 240px;
+  min-width: 150px;
   padding: 6px 10px;
   border-radius: 6px;
   border: 2px solid var(--text-color);

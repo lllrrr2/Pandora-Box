@@ -1,29 +1,29 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import {useSettingStore} from "@/store/settingStore";
 import {pWarning} from "@/util/pLoad";
 import {Events} from "@/runtime";
+import {useShortcutStore} from "@/store/shortcutStore";
 
 // i18n
 const {t} = useI18n();
-const settingStore = useSettingStore()
+const shortcutStore = useShortcutStore()
 
 // 过滤数据
 const shortcut = ref('')
 
 async function onShowHotkeyChange(key: string) {
   if (!key.includes("+") || key.length == 1) {
-    pWarning(t("setting.shortcut.double"))
+    pWarning(t("shortcut.double"))
     return;
   }
-  if (key === settingStore.sc_hide) {
+  if (key === shortcutStore.sc_hide) {
     return;
   }
 
   // 注册快捷键
-  const old = settingStore.sc_hide
-  settingStore.setSc_hide(key)
-  if (!settingStore.sc_switch) {
+  const old = shortcutStore.sc_hide
+  shortcutStore.setSc_hide(key)
+  if (!shortcutStore.sc_switch) {
     return;
   }
   Events.Emit({
@@ -37,7 +37,7 @@ async function onShowHotkeyChange(key: string) {
 }
 
 onMounted(() => {
-  shortcut.value = settingStore.sc_hide
+  shortcut.value = shortcutStore.sc_hide
 })
 
 
@@ -48,24 +48,28 @@ onMounted(() => {
     <template #top>
       <el-space class="space">
         <div class="title">
-          {{ $t("setting.shortcut.title") }}
+          {{ $t("shortcut.title") }}
         </div>
       </el-space>
     </template>
     <template #bottom>
-      <el-row :gutter="20"
+      <el-row :gutter="20" class="spark"
               style="margin-left: 0; margin-right: 0;">
-        <el-col class="spark" :span="24">
-          <div class="box">
-            <ul class="info-list">
-              <li style="height: 30px">
-                <strong>
-                  {{ $t('setting.shortcut.show') }} :
-                </strong>
-                <MyHotkeyInput v-model="shortcut" @change="onShowHotkeyChange"/>
-              </li>
-            </ul>
+        <el-col :span="6">
+          <span class="demonstration">{{ $t('shortcut.describe') }}</span>
+          <div class="dTitle">
+            <strong>
+              {{ $t('shortcut.show') }}
+            </strong>
           </div>
+        </el-col>
+        <el-col :span="8">
+          <span class="demonstration">{{ $t('shortcut.app') }}</span>
+          <MyHotkeyInput v-model="shortcut" @change="onShowHotkeyChange"/>
+        </el-col>
+        <el-col :span="8">
+          <span class="demonstration">{{ $t('shortcut.global') }}</span>
+          <MyHotkeyInput v-model="shortcut" @change="onShowHotkeyChange"/>
         </el-col>
       </el-row>
     </template>
@@ -87,18 +91,17 @@ onMounted(() => {
   max-width: 95%;
 }
 
-.box {
-  border-radius: 8px;
-  text-align: left;
+.demonstration {
+  display: block;
+  color: var(--text-color);
+  opacity: 0.3;
+  font-size: 14px;
+  margin-bottom: 20px;
 }
 
-.info-list {
-  list-style: none;
-  padding: 0;
-}
-
-.info-list li {
+.dTitle {
   font-size: 18px;
-  margin: 8px 0;
+  padding-top: 6px;
 }
+
 </style>
