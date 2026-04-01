@@ -68,7 +68,8 @@ watch(() => menuStore.background, (nextBackground) => {
   background-attachment: fixed;
   background-color: var(--blend-color);
   background-blend-mode: overlay;
-  transition: background-image 0.6s ease-in-out, background-color 0.4s ease-in-out;
+  transition: background-image 0.8s cubic-bezier(0.25, 1, 0.5, 1),
+  background-color 0.5s cubic-bezier(0.25, 1, 0.5, 1);
   position: relative;
   overflow: hidden;
 }
@@ -99,11 +100,14 @@ watch(() => menuStore.background, (nextBackground) => {
   margin: 15px 15px 15px 0;
   border-radius: 15px;
   background-color: var(--right-bg-color);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15),
-  0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow:
+      0 30px 60px rgba(0, 0, 0, 0.12),
+      0 4px 12px rgba(0, 0, 0, 0.04),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1); /* 微弱的内部高光边缘 */
   display: flex;
   flex-direction: column;
   border: var(--right-boder);
+  transition: background-color 0.4s ease;
 }
 
 .top-title {
