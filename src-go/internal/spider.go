@@ -4,9 +4,13 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"regexp"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/common/convert"
-	mu "github.com/metacubex/mihomo/common/utils"
 	"github.com/metacubex/mihomo/config"
 	"github.com/metacubex/mihomo/log"
 	"github.com/snakem982/pandora-box/api/models"
@@ -15,10 +19,6 @@ import (
 	"github.com/snakem982/pandora-box/pkg/proxy"
 	"github.com/snakem982/pandora-box/pkg/utils"
 	"gopkg.in/yaml.v3"
-	"regexp"
-	"strings"
-	"sync"
-	"time"
 )
 
 // 分享链接
@@ -274,7 +274,6 @@ func UrlTest(proxies []map[string]any, testUrl string) []map[string]any {
 	result := make([]map[string]any, 0)
 	m := sync.Mutex{}
 
-	expectedStatus, _ := mu.NewUnsignedRanges[uint16]("200/204/301/302/304")
 	url := testUrl
 	if url == "" {
 		url = "https://www.google.com/blank.html"
@@ -308,7 +307,7 @@ func UrlTest(proxies []map[string]any, testUrl string) []map[string]any {
 
 			ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*4500)
 			defer cancel()
-			pass := adapter.NewProxy(proxyAdapter).URLTestByPandora(ctx, url, expectedStatus)
+			_, pass, _ := adapter.NewProxy(proxyAdapter).StatusTest(ctx, url)
 			if pass {
 				m.Lock()
 				result = append(result, pp)
