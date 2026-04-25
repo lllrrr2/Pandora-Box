@@ -13,6 +13,7 @@ import {useRouter} from "vue-router";
 import {pUpdateMihomo} from "@/util/mihomo";
 import {useMenuStore} from "@/store/menuStore";
 import {Events} from "@/runtime";
+import {useHomeStore} from "@/store/homeStore";
 
 // 获取当前 Vue 实例的 proxy 对象 和 api
 const {proxy} = getCurrentInstance()!;
@@ -22,6 +23,7 @@ const api = createApi(proxy);
 const webStore = useWebStore()
 const menuStore = useMenuStore()
 const settingStore = useSettingStore()
+const homeStore = useHomeStore()
 const {t} = useI18n()
 
 // 使用路由
@@ -180,7 +182,7 @@ function checkUpdate() {
         </div>
         <hr/>
         <ul class="info-list">
-          <li>
+          <li v-if="homeStore.os !== 'MacOS arm64'">
             <strong>{{ $t('setting.px.startup') }} :</strong>
             <el-switch
                 v-model="settingStore.startup"

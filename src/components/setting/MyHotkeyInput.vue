@@ -2,7 +2,10 @@
   <div
       ref="el"
       class="fake-input"
-      :class="{ focused: recording }"
+      :class="{
+        focused: recording,
+        disabled: disabled
+      }"
       tabindex="0"
       @click="start"
       @keydown.prevent.stop="onKeydown"
@@ -18,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import {ref, watch} from 'vue'
 
 /* ================= props / emits ================= */
 const props = defineProps({
@@ -26,6 +29,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  disabled: {
+    type: Boolean,
+    default: false
+  }
 })
 
 const emit = defineEmits([
@@ -54,6 +61,9 @@ watch(
 
 /* ================= events ================= */
 function start() {
+  if (props.disabled) {
+    return
+  }
   recording.value = true
   keys.clear()
   el.value.focus()
@@ -138,5 +148,11 @@ function format(set) {
   50% {
     opacity: 0;
   }
+}
+
+.fake-input.disabled {
+  color: var(--text-color);
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 </style>

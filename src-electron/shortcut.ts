@@ -38,10 +38,7 @@ export function initShortcut(mainWindow: BrowserWindow) {
 
 
 function showOrHide(mainWindow: BrowserWindow) {
-    if (mainWindow.isVisible() && mainWindow.isFocused()) {
-        app.dock?.hide();
-        mainWindow.hide()
-    } else {
+    if (!mainWindow.isVisible() || !mainWindow.isFocused()) {
         mainWindow?.show();
         mainWindow?.focus();
         app.dock?.show();

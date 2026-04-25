@@ -9,6 +9,7 @@ import {pError, pLoad, pSuccess} from "@/util/pLoad";
 import {useSettingStore} from "@/store/settingStore";
 import {useWebStore} from "@/store/webStore";
 import {useShortcutStore} from "@/store/shortcutStore";
+import {useShortcut} from "@/util/useShortcut";
 
 // i18n
 const {t} = useI18n();
@@ -23,6 +24,9 @@ const proxiesStore = useProxiesStore();
 const settingStore = useSettingStore();
 const shortcutStore = useShortcutStore();
 const webStore = useWebStore();
+
+// 快捷键
+const {registerShortcut} = useShortcut();
 
 // 模式切换
 Events.On("switchMode", (ev: any) => {
@@ -73,22 +77,22 @@ Events.On("switchProfiles", async (ev: any) => {
 });
 
 // 注册快捷键
-function registerShortcut() {
+function registerGlobalShortcut() {
   Events.Emit({
     name: "shortcut:register",
     data: {
       name: "showOrHide",
       old: "",
-      key: shortcutStore.sc_hide
+      key: shortcutStore.globalShow
     }
   })
 }
 
 watch(
-    () => shortcutStore.sc_switch,
+    () => shortcutStore.globalSwitch,
     (newVal) => {
       if (newVal) {
-        registerShortcut()
+        registerGlobalShortcut()
       } else {
         Events.Emit({
           name: "shortcut:unregister-all",
@@ -137,8 +141,13 @@ onMounted(async () => {
   })
 
   // 注册快捷键
-  if (shortcutStore.sc_switch) {
-    registerShortcut()
+  if (shortcutStore.appSwitch) {
+    registerShortcut(shortcutStore.appHide, () => {
+      Events.Emit({name: "hide", data: true});
+    })
+  }
+  if (shortcutStore.globalSwitch) {
+    registerGlobalShortcut()
   }
 })
 

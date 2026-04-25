@@ -249,10 +249,17 @@ tray:
 shortcut:
   title: 快捷键
   describe: 功能说明
-  app: 快捷键
-  global: 全局快捷键
-  show: 显示/隐藏
+  app:
+    title: 快捷键
+    on: 开启快捷键
+  global:
+    title: 全局快捷键
+    on: 开启全局快捷键
+  null: 无
+  show: 显示
+  hide: 隐藏
   double: 快捷键不允许为单个
+  three: 全局快捷键必须为3个以上
   success: 注册成功
   error: 注册失败，可能已被占用或格式错误
 

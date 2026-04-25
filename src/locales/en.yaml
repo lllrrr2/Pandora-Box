@@ -246,11 +246,18 @@ tray:
   quit: Quit
 
 shortcut:
-  title: Shortcut
-  describe: Function description
-  app: Shortcut keys
-  global: Global shortcut keys
-  show: Show/Hide
-  double: Shortcut keys are not allowed to be single
-  success: Registration successful
-  error: Registration failed, possibly due to the app already being used or incorrect formatting
+  title: Shortcuts
+  describe: Function Description
+  app:
+    title: App Shortcuts
+    on: Enable Shortcuts
+  global:
+    title: Global Shortcuts
+    on: Enable Global Shortcuts
+  null: None
+  show: Show
+  hide: Hide
+  double: Single-key shortcuts are not allowed
+  three: Global shortcuts must contain at least 3 keys
+  success: Registered successfully
+  error: Registration failed, may be already in use or invalid format
