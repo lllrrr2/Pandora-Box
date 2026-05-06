@@ -64,18 +64,20 @@ const createWindow = (isBoot: boolean) => {
     // 托盘
     initTray(mainWindow);
 
-    // 快捷键
-    initShortcut(mainWindow)
-
     // 页面加载
     const filePath = IsDev
         ? `http://localhost:5173?port=${storeInfo.port()}&secret=${storeInfo.secret()}`
         : `http://${storeInfo.listenAddr()}/index.html?port=${storeInfo.port()}&secret=${storeInfo.secret()}`;
 
     log.info('准备加载页面');
-    mainWindow.loadURL(filePath).catch((err) => {
-        log.error('加载页面失败:', err);
-    });
+    mainWindow
+        .loadURL(filePath)
+        .then(() => {
+            initShortcut(mainWindow);
+        })
+        .catch((err) => {
+            log.error('加载页面失败:', err);
+        });
 
     // 页面加载完成再显示，避免白屏
     mainWindow.webContents.once('did-finish-load', () => {
