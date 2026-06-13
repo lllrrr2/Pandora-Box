@@ -26,10 +26,6 @@ jobs:
         run: |
           npm install
 
-      - name: Install Makers
-        run: npm install --save-dev @electron-forge/maker-squirrel @electron-forge/maker-wix @electron-forge/maker-deb @electron-forge/maker-rpm @electron-forge/maker-zip
-
-
       - name: Set Up Go
         uses: actions/setup-go@v6
         with:
@@ -79,39 +75,10 @@ jobs:
           npm prune
           npm run make -- --arch=$arch
 
-      - name: Debug build files (smart)
+      - name: Deep inspect build
         shell: pwsh
         run: |
-          pwd
-          
-          Write-Host "===== Root ====="
-          Get-ChildItem .
-          
-          Write-Host "===== out ====="
-          if (-Not (Test-Path out)) {
-            Write-Host "❌ out NOT found"
-            exit 1
-          }
-          
-          Get-ChildItem out
-          
-          Write-Host "===== check out/make ====="
-          if (Test-Path out/make) {
-          
-            Write-Host "✅ out/make FOUND"
-            Write-Host "===== out/make structure ====="
-          
-            # 树形结构（关键）
-            Get-ChildItem out/make -Recurse |
-              Select-Object FullName
-          
-          } else {
-            Write-Host "❌ out/make NOT found"
-          
-            Write-Host "===== out structure (for debugging) ====="
-            Get-ChildItem out -Recurse |
-              Select-Object FullName
-          }
+          Get-ChildItem build -Recurse | Select FullName
 
       - name: Compress Executable
         shell: pwsh
