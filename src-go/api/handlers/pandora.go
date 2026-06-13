@@ -2,6 +2,11 @@ package handlers
 
 import (
 	"errors"
+	"net/netip"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/metacubex/chi"
 	"github.com/metacubex/chi/render"
 	"github.com/metacubex/http"
@@ -16,9 +21,6 @@ import (
 	"github.com/snakem982/pandora-box/pkg/constant"
 	sys "github.com/snakem982/pandora-box/pkg/sys/proxy"
 	"github.com/snakem982/pandora-box/pkg/utils"
-	"net/netip"
-	"os"
-	"strings"
 )
 
 func Pandora(r chi.Router) {
@@ -131,6 +133,9 @@ func configDir(w http.ResponseWriter, r *http.Request) {
 
 func exitPx(w http.ResponseWriter, r *http.Request) {
 	job.Exit(false)
+	go func() {
+		time.Sleep(time.Second)
+		os.Exit(0)
+	}()
 	render.PlainText(w, r, "ok")
-	os.Exit(0)
 }
