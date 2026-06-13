@@ -25,6 +25,10 @@ jobs:
       - name: Install Frontend Dependencies
         run: npm install
 
+      - name: Install Makers
+        run: npm install --save-dev @electron-forge/maker-squirrel @electron-forge/maker-wix @electron-forge/maker-deb @electron-forge/maker-rpm @electron-forge/maker-zip
+
+
       - name: Set Up Go
         uses: actions/setup-go@v6
         with:
@@ -74,6 +78,24 @@ jobs:
           npm dedupe
           npm prune
           npx electron-forge make --arch=$arch
+
+      - name: Debug build files
+        shell: pwsh
+        run: |
+          pwd
+          
+          Write-Host "===== Current directory ====="
+          Get-ChildItem .
+          
+          Write-Host "===== Entire workspace ====="
+          Get-ChildItem -Recurse
+          
+          if (Test-Path out) {
+            Write-Host "===== out ====="
+            Get-ChildItem out -Recurse
+          } else {
+            Write-Host "No out directory"
+          }
 
       - name: Compress Executables
         shell: pwsh
