@@ -20,7 +20,10 @@ jobs:
       - name: Set Up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 'latest'
+          node-version: 26.0.0
+
+      - name: Lock npm version
+        run: npm i -g npm@11.12.1
 
       - name: Install Frontend Dependencies
         run: |
@@ -75,11 +78,6 @@ jobs:
           npm dedupe
           npm prune
           npm run make -- --arch=$arch
-
-      - name: Deep inspect build
-        shell: pwsh
-        run: |
-          Get-ChildItem build -Recurse | Select FullName
 
       - name: Compress Executable
         shell: pwsh
