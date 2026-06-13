@@ -79,22 +79,26 @@ jobs:
           npm prune
           npx electron-forge make --arch=$arch
 
-      - name: Debug build files
+      - name: Debug build files (clean)
         shell: pwsh
         run: |
           pwd
           
-          Write-Host "===== Current directory ====="
+          Write-Host "===== Root ====="
           Get-ChildItem .
           
-          Write-Host "===== Entire workspace ====="
-          Get-ChildItem -Recurse
-          
+          Write-Host "===== out ====="
           if (Test-Path out) {
-            Write-Host "===== out ====="
-            Get-ChildItem out -Recurse
+            Get-ChildItem out
           } else {
-            Write-Host "No out directory"
+            Write-Host "out not found"
+          }
+          
+          Write-Host "===== out/make ====="
+          if (Test-Path out/make) {
+            Get-ChildItem out/make -Recurse
+          } else {
+            Write-Host "out/make not found"
           }
 
       - name: Compress Executables
