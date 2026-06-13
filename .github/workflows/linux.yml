@@ -79,7 +79,7 @@ jobs:
           npm prune
           npm run make -- --arch=$arch
 
-      - name: Debug build files (clean)
+      - name: Debug build files (smart)
         shell: pwsh
         run: |
           pwd
@@ -88,17 +88,29 @@ jobs:
           Get-ChildItem .
           
           Write-Host "===== out ====="
-          if (Test-Path out) {
-            Get-ChildItem out
-          } else {
-            Write-Host "out not found"
+          if (-Not (Test-Path out)) {
+            Write-Host "❌ out NOT found"
+            exit 1
           }
           
-          Write-Host "===== out/make ====="
+          Get-ChildItem out
+          
+          Write-Host "===== check out/make ====="
           if (Test-Path out/make) {
-            Get-ChildItem out/make -Recurse
+          
+            Write-Host "✅ out/make FOUND"
+            Write-Host "===== out/make structure ====="
+          
+            # 树形结构（关键）
+            Get-ChildItem out/make -Recurse |
+              Select-Object FullName
+          
           } else {
-            Write-Host "out/make not found"
+            Write-Host "❌ out/make NOT found"
+          
+            Write-Host "===== out structure (for debugging) ====="
+            Get-ChildItem out -Recurse |
+              Select-Object FullName
           }
 
       - name: Compress Executable
