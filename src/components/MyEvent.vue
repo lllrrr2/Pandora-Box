@@ -8,6 +8,8 @@ import {useI18n} from "vue-i18n";
 import {pError, pLoad, pSuccess} from "@/util/pLoad";
 import {useSettingStore} from "@/store/settingStore";
 import {useWebStore} from "@/store/webStore";
+import {useShortcutStore} from "@/store/shortcutStore";
+import {useShortcut} from "@/util/useShortcut";
 
 // i18n
 const {t} = useI18n();
@@ -20,7 +22,11 @@ const api = createApi(proxy);
 const menuStore = useMenuStore();
 const proxiesStore = useProxiesStore();
 const settingStore = useSettingStore();
+const shortcutStore = useShortcutStore();
 const webStore = useWebStore();
+
+// 快捷键
+const {registerShortcut} = useShortcut();
 
 // 模式切换
 Events.On("switchMode", (ev: any) => {
@@ -70,6 +76,38 @@ Events.On("switchProfiles", async (ev: any) => {
   })
 });
 
+// 注册快捷键
+function registerGlobalShortcut() {
+  Events.Emit({
+    name: "shortcut:register",
+    data: {
+      name: "showOrHide",
+      old: "",
+      key: shortcutStore.globalShow
+    }
+  })
+}
+
+watch(
+    () => shortcutStore.globalSwitch,
+    (newVal) => {
+      if (newVal) {
+        registerGlobalShortcut()
+      } else {
+        Events.Emit({
+          name: "shortcut:unregister-all",
+          data: ""
+        })
+      }
+    })
+
+Events.On("shortcut:result", (success) => {
+  if (!success) {
+    pError(t("shortcut.error"))
+  }
+})
+
+
 onMounted(async () => {
   // 获取初始数据
   const res = await api.getMihomo()
@@ -101,6 +139,16 @@ onMounted(async () => {
     name: "proxy",
     data: menuStore.proxy
   })
+
+  // 注册快捷键
+  if (shortcutStore.appSwitch) {
+    registerShortcut(shortcutStore.appHide, () => {
+      Events.Emit({name: "hide", data: true});
+    })
+  }
+  if (shortcutStore.globalSwitch) {
+    registerGlobalShortcut()
+  }
 })
 
 </script>

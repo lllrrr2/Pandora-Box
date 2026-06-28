@@ -2,15 +2,17 @@ package internal
 
 import (
 	"fmt"
-	"github.com/metacubex/mihomo/hub/executor"
-	"github.com/metacubex/mihomo/tunnel"
-	"github.com/snakem982/pandora-box/pkg/constant"
-	sysProxy "github.com/snakem982/pandora-box/pkg/sys/proxy"
 	"io"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
+	"time"
+
+	"github.com/metacubex/mihomo/hub/executor"
+	"github.com/metacubex/mihomo/tunnel"
+	"github.com/snakem982/pandora-box/pkg/constant"
+	sysProxy "github.com/snakem982/pandora-box/pkg/sys/proxy"
 
 	"github.com/metacubex/mihomo/config"
 	C "github.com/metacubex/mihomo/constant"
@@ -64,21 +66,8 @@ func Init() {
 	_ = utils.ModifyFilePermissions(pathTemp, pathTempDst)
 	log.Infoln("[Permission] is ok")
 
-	// 释放资源文件
-	_, _ = utils.SaveFile(utils.GetUserHomeDir("geoip.metadb"), GeoIp)
-	_, _ = utils.SaveFile(utils.GetUserHomeDir("GeoSite.dat"), GeoSite)
-	_, _ = utils.SaveFile(utils.GetUserHomeDir("ASN.mmdb"), ASN)
-
-	// 释放大模型
-	bin := utils.GetUserHomeDir("Model.bin")
-	if !utils.FileExists(bin) {
-		_, _ = utils.SaveFile(bin, ModelBin)
-	}
-
-	GeoIp = nil
-	GeoSite = nil
-	ASN = nil
-	ModelBin = nil
+	// 释放运行时需要的资源文件
+	releaseRuntimeData()
 }
 
 var NowConfig *config.Config
@@ -118,6 +107,11 @@ func startCore(profile models.Profile, reload bool) {
 				}
 			} else {
 				rawCfg.ProxyProvider = provider
+			}
+		}
+		if len(rawCfg.ProxyProvider) > 1 {
+			for key, value := range rawCfg.ProxyProvider {
+				value["override"] = map[string]string{"additional-suffix": "-" + key}
 			}
 		}
 		if len(proxy) > 0 {
@@ -292,4 +286,51 @@ func SwitchProfile(reload bool) {
 	}
 
 	startCore(profile, reload)
+}
+
+// 释放GEO数据
+func releaseRuntimeData() {
+	geoIpPath := utils.GetUserHomeDir("geoip.metadb")
+	if !utils.FileExists(geoIpPath) || IsModifiedMoreThanTwoMonthsAgo(geoIpPath) {
+		_, _ = utils.SaveFile(geoIpPath, GeoIp)
+	}
+
+	geoSitePath := utils.GetUserHomeDir("GeoSite.dat")
+	if !utils.FileExists(geoSitePath) || IsModifiedMoreThanTwoMonthsAgo(geoSitePath) {
+		_, _ = utils.SaveFile(geoSitePath, GeoSite)
+	}
+
+	asnPath := utils.GetUserHomeDir("ASN.mmdb")
+	if !utils.FileExists(asnPath) || IsModifiedMoreThanTwoMonthsAgo(asnPath) {
+		_, _ = utils.SaveFile(asnPath, ASN)
+	}
+
+	modelBinPath := utils.GetUserHomeDir("Model.bin")
+	if !utils.FileExists(modelBinPath) {
+		_, _ = utils.SaveFile(modelBinPath, ModelBin)
+	}
+
+	GeoIp = nil
+	GeoSite = nil
+	ASN = nil
+	ModelBin = nil
+}
+
+// IsModifiedMoreThanTwoMonthsAgo 判断文件修改日期是否大于两个月
+// 如果发生任何错误（如文件不存在、无权限等），直接返回 false
+func IsModifiedMoreThanTwoMonthsAgo(filePath string) bool {
+	// 1. 获取文件状态信息，如果出错直接返回 false
+	fileInfo, err := os.Stat(filePath)
+	if err != nil {
+		return false
+	}
+
+	// 2. 获取文件的修改时间
+	modTime := fileInfo.ModTime()
+
+	// 3. 计算当前时间往前推 2 个月的时间点
+	twoMonthsAgo := time.Now().AddDate(0, -2, 0)
+
+	// 4. 比较时间：如果修改时间早于 2 个月前，返回 true，否则返回 false
+	return modTime.Before(twoMonthsAgo)
 }

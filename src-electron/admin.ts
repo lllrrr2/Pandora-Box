@@ -1,12 +1,10 @@
 import path from "node:path";
 import {spawn} from "child_process";
-import {app, dialog} from "electron";
+import {dialog} from "electron";
 import fs from "node:fs";
 import log from './log';
 import {storeGet} from "./store";
-
-// 是否在开发模式
-const isDev = !app.isPackaged;
+import {AppName, IsDev} from "./common";
 
 // 获取提示词
 function getAuthTip(): string {
@@ -21,7 +19,7 @@ function getAuthTip(): string {
 // 获取px路径
 function getBackendPath() {
     const execName = process.platform === 'win32' ? 'px.exe' : 'px';
-    return isDev
+    return IsDev
         ? path.join(__dirname, '../../src-go', execName)
         : path.join(process.resourcesPath, execName);
 }
@@ -63,7 +61,7 @@ function checkAdminRights(callback: any) {
 // 开启后端
 export function startBackend(addr: string) {
     const backendPath = getBackendPath();
-    const args = ['-addr=' + addr, '-home=' + encodeURIComponent(log.getHomeDir())];
+    const args = ['-addr=' + addr, '-home=' + encodeURIComponent(log.getAppConfigDir())];
 
     // 检查管理权限
     checkAdminRights((isAdmin: boolean) => {
@@ -98,7 +96,7 @@ export function startBackend(addr: string) {
                     buttons: ['继续', '取消'],
                     defaultId: 0,
                     cancelId: 1,
-                    title: 'Pandora-Box',
+                    title: AppName,
                     message: getAuthTip(),
                 });
 
@@ -171,7 +169,6 @@ function tryRunAsAdmin(executable: string, args: string[], callback: (success: b
                 'sudo'
             ];
 
-            let tried = false;
 
             (function tryNext(index = 0) {
                 if (index >= methods.length) {
@@ -187,7 +184,6 @@ function tryRunAsAdmin(executable: string, args: string[], callback: (success: b
                 }
 
                 log.info(`Trying to elevate with: ${method}`);
-                tried = true;
 
                 const elevated = spawn(method, [executable, ...args], {
                     env,

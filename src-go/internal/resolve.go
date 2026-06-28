@@ -38,6 +38,7 @@ func MapsToProxies(ray []map[string]any) ([]map[string]any, error) {
 	mutex := sync.Mutex{}
 
 	proxies := make([]map[string]any, 0)
+	seen := make(map[string]bool) // 存储已经出现过的 name 值
 	for _, m := range ray {
 		proxy := m
 		pool.SubmitWithTimeout(func(done chan struct{}) {
@@ -51,7 +52,11 @@ func MapsToProxies(ray []map[string]any) ([]map[string]any, error) {
 			_, err := adapter.ParseProxy(proxy)
 			if err == nil {
 				mutex.Lock()
-				proxies = append(proxies, proxy)
+				proxyName := proxy["name"].(string)
+				if !seen[proxyName] {
+					seen[proxyName] = true
+					proxies = append(proxies, proxy)
+				}
 				mutex.Unlock()
 			} else {
 				marshal, err2 := json.Marshal(proxy)
@@ -146,6 +151,8 @@ func Resolve(content string, profile *models.Profile, refresh bool) error {
 			if err1 != nil {
 				return yamlError
 			} else {
+				// 去重
+				rails = Deduplicate(rails)
 				saveProfile(rails, profile)
 				return nil
 			}
@@ -303,6 +310,10 @@ func ParseHeaders(header http.Header, url string, profile *models.Profile) {
 	// 主页
 	if val := header.Get("Profile-Web-Page-Url"); val != "" {
 		profile.Home = val
+	}
+
+	if val := header.Get("Support-Url"); val != "" {
+		profile.Support = val
 	}
 
 }

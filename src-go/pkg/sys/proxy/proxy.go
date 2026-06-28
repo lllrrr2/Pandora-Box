@@ -1,5 +1,7 @@
 package sys
 
+var isOpen = false
+
 // EnableProxy 开启系统代理
 func EnableProxy(host string, port int) error {
 	_ = OnHttp(Addr{
@@ -15,10 +17,15 @@ func EnableProxy(host string, port int) error {
 		Port: port,
 	})
 
+	isOpen = true
+
 	return nil
 }
 
 // DisableProxy 关闭代理
 func DisableProxy() {
-	_ = OffAll()
+	if isOpen {
+		_ = OffAll()
+		isOpen = false
+	}
 }

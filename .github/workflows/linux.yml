@@ -15,21 +15,24 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set Up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 'latest'
+          node-version: 26.0.0
+
+      - name: Lock npm version
+        run: npm i -g npm@11.12.1
 
       - name: Install Frontend Dependencies
         run: |
           npm install
 
       - name: Set Up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: '1.24'
+          go-version: '1.26'
 
       - name: Install Backend Dependencies
         run: |

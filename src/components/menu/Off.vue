@@ -51,10 +51,8 @@ const cancelHide = () => {
 
 // 退出
 const quit = () => {
-  api.exit().then(res => {
-    if (res && res === "ok") {
-      Events.Emit({name: "doQuit", data: true})
-    }
+  api.exit().then(() => {
+    Events.Emit({name: "doQuit", data: true})
   }).catch(() => {
     Events.Emit({name: "doQuit", data: false})
   })

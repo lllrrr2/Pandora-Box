@@ -410,8 +410,17 @@ watch(() => proxiesStore.now, async () => {
   display: flex;
   gap: 10px;
   margin: 12px 0 3px 0;
-  overflow-x: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+}
+
+.proxy-group::-webkit-scrollbar {
+  display: none;
 }
 
 .scroll-left {
@@ -442,6 +451,7 @@ watch(() => proxiesStore.now, async () => {
   cursor: pointer;
   box-shadow: var(--left-nav-shadow);
   white-space: nowrap;
+  font-family: inherit;
 }
 
 .proxy-group-title:hover,

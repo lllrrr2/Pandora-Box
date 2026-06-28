@@ -1,17 +1,27 @@
-import {app, BrowserWindow, BrowserWindowConstructorOptions, session} from 'electron';
+import {app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, session} from 'electron';
 import path from 'node:path';
 import {startServer, storeInfo} from "./server";
 import {doQuit, initTray, showWindow} from "./tray";
+import {initMenu} from "./menu"
 import {startBackend} from "./admin";
 import log from './log';
 import {initStore, storeGet} from "./store";
 import {isBootAutoLaunch, updateAutoLaunchRegistration, waitForNetworkReady} from "./launch";
+import {deeplink} from "./deeplink";
+import {setRandomUA} from "./ua";
+import {selectDirectory} from "./selector";
+import {IsDev} from "./common";
+import {initShortcut} from "./shortcut";
 
-// 是否在开发模式
-const isDev = !app.isPackaged;
+// 初始化前端数据库
+initStore()
+
+// 初始化日志
+log.initLog()
 
 // 主窗口
 let mainWindow: BrowserWindow;
+
 // 屏蔽安全警告
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 const createWindow = (isBoot: boolean) => {
@@ -46,21 +56,28 @@ const createWindow = (isBoot: boolean) => {
 
     mainWindow = new BrowserWindow(windowOptions);
 
-    // 隐藏菜单栏
+    // 隐藏窗口菜单栏
     mainWindow.setMenu(null);
 
+    // 顶部菜单
+    initMenu(mainWindow);
     // 托盘
     initTray(mainWindow);
 
     // 页面加载
-    const filePath = isDev
+    const filePath = IsDev
         ? `http://localhost:5173?port=${storeInfo.port()}&secret=${storeInfo.secret()}`
         : `http://${storeInfo.listenAddr()}/index.html?port=${storeInfo.port()}&secret=${storeInfo.secret()}`;
 
     log.info('准备加载页面');
-    mainWindow.loadURL(filePath).catch((err) => {
-        log.error('页面加载失败:', err);
-    });
+    mainWindow
+        .loadURL(filePath)
+        .then(() => {
+            initShortcut(mainWindow);
+        })
+        .catch((err) => {
+            log.error('加载页面失败:', err);
+        });
 
     // 页面加载完成再显示，避免白屏
     mainWindow.webContents.once('did-finish-load', () => {
@@ -72,33 +89,32 @@ const createWindow = (isBoot: boolean) => {
             log.info('页面加载成功');
         }
     });
+
+    mainWindow.on('closed', () => {
+        deeplink.DeepLinkHandlerReady(false);
+        mainWindow = null;
+    });
 };
 
-// 等待 backend 传来的 port 和 secret
-let resolveReady: () => void;
-const waitForReady = new Promise<void>((resolve) => {
-    resolveReady = resolve;
-});
 
-// 生成一个随机 UA
-const version = Math.floor(Math.random() * 20 + 85); // 统一版本号
-const agents = [
-    {
-        ua: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/${version}.0.0.0 Safari/537.36`,
-        platform: `"Windows"`,
-        secChUa: `"Google Chrome";v="${version}", "Chromium";v="${version}", "Not_A Brand";v="99"`
-    },
-    {
-        ua: `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_${Math.floor(Math.random() * 9 + 10)}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${version}.0.0.0 Safari/537.36`,
-        platform: `"macOS"`,
-        secChUa: `"Google Chrome";v="${version}", "Chromium";v="${version}", "Not_A Brand";v="99"`
-    },
-    {
-        ua: `Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${version}.0.0.0 Safari/537.36`,
-        platform: `"Linux"`,
-        secChUa: `"Google Chrome";v="${version}", "Chromium";v="${version}", "Not_A Brand";v="99"`
+// 监听深度链接事件
+ipcMain.on(deeplink.DEEP_LINK_READY_EVENT, (event) => {
+    if (!mainWindow || event.sender !== mainWindow.webContents) {
+        return;
     }
-];
+    deeplink.DeepLinkHandlerReady(true);
+    deeplink.processPendingDeepLinks(mainWindow);
+});
+for (const arg of process.argv) {
+    deeplink.pushDeeplink(arg)
+}
+
+// 修改配置目录
+ipcMain.handle('select-directory', async (event, options = {}) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    const paths = await selectDirectory(win, options);
+    return paths.length > 0 ? paths : null; // 返回 null 表示取消
+});
 
 // 单例模式
 const gotTheLock = app.requestSingleInstanceLock();
@@ -106,10 +122,24 @@ if (!gotTheLock) {
     doQuit()
 } else {
     // 试图启动第二个应用实例
-    app.on('second-instance', showWindow);
+    app.on('second-instance', (_event, commandLine) => {
+        showWindow();
+        const urls = commandLine.filter(deeplink.isDeepLinkUrl);
+        if (urls.length > 0) {
+            urls.forEach((url) => deeplink.handleDeepLink(url, mainWindow));
+        }
+    });
 
     // 监听应用被激活
     app.on('activate', showWindow);
+
+    if (process.platform === 'darwin') {
+        app.on('open-url', (event, url) => {
+            event.preventDefault();
+            showWindow();
+            deeplink.handleDeepLink(url, mainWindow);
+        });
+    }
 
     app.whenReady().then(async () => {
         // 判断是否开机启动
@@ -130,8 +160,11 @@ if (!gotTheLock) {
             }
         }
 
-        // 初始化前端数据库
-        initStore(log.getHomeDir())
+        // 等待 backend 传来的 port 和 secret
+        let resolveReady: () => void;
+        const waitForReady = new Promise<void>((resolve) => {
+            resolveReady = resolve;
+        });
 
         // 启动前端静态服务
         startServer(resolveReady, startBackend)
@@ -139,15 +172,11 @@ if (!gotTheLock) {
         // 等待后端启动
         await waitForReady;
 
+        // 注册深度链接
+        deeplink.registerDeepLink();
+
         // 设置请求头 Referer
-        const agent = agents[Math.floor(Math.random() * agents.length)];
-        session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-            details.requestHeaders['Referer'] = new URL(details.url).origin // 只发送域名
-            details.requestHeaders['User-Agent'] = agent.ua;
-            details.requestHeaders['sec-ch-ua-platform'] = agent.platform;
-            details.requestHeaders['sec-ch-ua'] = agent.secChUa;
-            callback({requestHeaders: details.requestHeaders})
-        })
+        setRandomUA(session)
 
         // 启动UI
         log.info('准备就绪，启动窗口，port=', storeInfo.port(), ' secret=', storeInfo.secret());
