@@ -86,21 +86,21 @@ require (
 	github.com/metacubex/restls-client-go v0.1.7 // indirect
 	github.com/metacubex/sevenzip v1.6.4 // indirect
 	github.com/metacubex/sing v0.5.7 // indirect
-	github.com/metacubex/sing-mux v0.3.9 // indirect
+	github.com/metacubex/sing-mux v0.3.10 // indirect
 	github.com/metacubex/sing-quic v0.0.0-20260527143057-68e10a6afdc3 // indirect
 	github.com/metacubex/sing-shadowsocks v0.2.12 // indirect
 	github.com/metacubex/sing-shadowsocks2 v0.2.7 // indirect
 	github.com/metacubex/sing-shadowtls v0.0.0-20260517015314-c11c36474edc // indirect
-	github.com/metacubex/sing-tun v0.4.20 // indirect
+	github.com/metacubex/sing-tun v0.4.21 // indirect
 	github.com/metacubex/sing-vmess v0.2.5 // indirect
 	github.com/metacubex/sing-wireguard v0.0.0-20260520151737-7e7c7c1b854c // indirect
 	github.com/metacubex/smux v0.0.0-20260105030934-d0c8756d3141 // indirect
 	github.com/metacubex/ssh v0.1.0 // indirect
-	github.com/metacubex/tailscale v0.0.0-20260520011538-f23132fac4b7 // indirect
-	github.com/metacubex/tailscale-wireguard-go v0.0.0-20260521124654-e1bf77ef79af // indirect
-	github.com/metacubex/tfo-go v0.0.0-20251204144243-738de9e3cd15 // indirect
+	github.com/metacubex/tailscale v0.0.0-20260623094802-1ab893d4162c // indirect
+	github.com/metacubex/tailscale-wireguard-go v0.0.0-20260623093519-06ea214022e4 // indirect
+	github.com/metacubex/tfo-go v0.0.0-20260623020846-376a77860b8c // indirect
 	github.com/metacubex/tls v0.1.6 // indirect
-	github.com/metacubex/utls v1.8.4 // indirect
+	github.com/metacubex/utls v1.8.7 // indirect
 	github.com/metacubex/wireguard-go v0.0.0-20250820062549-a6cecdd7f57f // indirect
 	github.com/metacubex/yamux v0.0.0-20250918083631-dd5f17c0be49 // indirect
 	github.com/miekg/dns v1.1.72 // indirect
@@ -150,4 +150,4 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
-replace github.com/metacubex/mihomo => github.com/snakem982/mihomo v1.1.22-moshen
+replace github.com/metacubex/mihomo => github.com/snakem982/mihomo v1.1.23-moshen
