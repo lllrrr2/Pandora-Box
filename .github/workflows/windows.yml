@@ -15,20 +15,23 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set Up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 'latest'
+          node-version: 26.0.0
+
+      - name: Lock npm version
+        run: npm i -g npm@11.12.1
 
       - name: Install Frontend Dependencies
         run: npm install
 
       - name: Set Up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: '1.24'
+          go-version: '1.26'
 
       - name: Install Backend Dependencies
         shell: pwsh
@@ -82,18 +85,18 @@ jobs:
           if ($arch -eq "amd64") {
             $arch = "x64"
           }
-          Compress-Archive -Path out\Pandora-Box*\* -DestinationPath "windows-${{ matrix.arch }}-app.zip"
-          Compress-Archive -Path out\make\wix\$arch\* -DestinationPath "windows-${{ matrix.arch }}-msi.zip"
+          Compress-Archive -Path out\Pandora-Box*\* -DestinationPath "Pandora-Box-${{ env.VERSION }}-windows-${{ matrix.arch }}-app.zip"
+          (Get-ChildItem -Path "out\make" -Filter "*.msi" -Recurse).FullName | Move-Item -Destination "Pandora-Box-${{ env.VERSION }}-windows-${{ matrix.arch }}.msi" -Force
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.VERSION }}
           name: ${{ env.VERSION }}
           draft: false
           prerelease: true
           files: |
-            windows-${{ matrix.arch }}-app.zip
-            windows-${{ matrix.arch }}-msi.zip
+            Pandora-Box-${{ env.VERSION }}-windows-${{ matrix.arch }}-app.zip
+            Pandora-Box-${{ env.VERSION }}-windows-${{ matrix.arch }}.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

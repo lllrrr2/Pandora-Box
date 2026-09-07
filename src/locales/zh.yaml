@@ -62,6 +62,7 @@ drag:
   size: 只允许单文件导入
   add: 导入中。。。
   success: 导入成功
+  select: 点击这里选择文件
 
 home:
   download: 下载
@@ -112,10 +113,15 @@ setting:
     startup: 开机自启
     dir: 配置目录
     open: 打开
+    change: 修改
+    change-title: 选择配置目录
+    change-warn: 路径中不得含有 "Pandora-Box-V3"
+    change-loading: 目录修改中。。。
     import: 导入
     export: 导出
     update: 软件更新
     check: 检查
+
 
 proxies:
   title: 代理
@@ -140,6 +146,7 @@ profiles:
   update: 更新时间
   placeholder: 订阅地址、分享链接、Yaml、Base64、Json
   home: 访问订阅主页
+  support: 访问支持页面
   del-tip: 正在使用中，不可删除
   edit:
     title: 标题
@@ -157,6 +164,12 @@ profiles:
   switch:
     ing: 切换中。。。
     success: 切换成功
+  deeplink:
+    importing: 正在导入配置。。。
+    import-success: 配置导入成功
+    import-failed: 配置导入失败
+    invalid-url: 无效的配置链接
+    invalid-url-format: 配置链接格式错误，必须是 HTTP 或 HTTPS
 
 rule:
   title: 规则
@@ -233,6 +246,21 @@ tray:
   tun: Tun模式
   quit: 退出
 
-
+shortcut:
+  title: 快捷键
+  describe: 功能说明
+  app:
+    title: 快捷键
+    on: 开启快捷键
+  global:
+    title: 全局快捷键
+    on: 开启全局快捷键
+  null: 无
+  show: 显示
+  hide: 隐藏
+  double: 快捷键不允许为单个
+  three: 全局快捷键必须为3个以上
+  success: 注册成功
+  error: 注册失败，可能已被占用或格式错误
 
 

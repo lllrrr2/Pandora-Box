@@ -17,7 +17,7 @@
 - Automatically adds minimal rule groups to unruly subscriptions
 - DNS overwrite option to prevent DNS leaks
 - Unified rules and group settings for all subscriptions
-- Supports TUN mode
+- Supports TUN mode and [Smart Group](https://github.com/vernesong/OpenClash/releases/tag/mihomo)
 
 ## Supported Platforms
 
@@ -30,6 +30,22 @@
 - Go to `Settings` → `Enable Authorization` → Restart the app → When the authorization prompt appears, grant
   permission → TUN mode can then be enabled in the app
 
+## How to Enable LAN Access
+
+Simply change the Listen Address in Settings to 0.0.0.0
+
+## Deeplink Profile Import
+
+Pandora-Box supports importing profiles via deeplink URLs, allowing users to easily add subscriptions from external sources.
+
+### URL Scheme
+
+The deeplink uses the custom protocol `pandora-box://` with the following format:
+
+```
+pandora-box://install-config?url=SUBSCRIPTION_URL
+```
+
 ## Note: Px Requires Network Access
 
 - When prompted, click "Allow" to grant network access
@@ -38,22 +54,6 @@
 
 - See [mac.md](mac/mac.md)
 
-## Major Improvements in the Latest Version
-
-1. Redesigned interface with support for theme switching, language switching, and drag-and-drop import
-2. Search bar at the top to quickly switch between nodes in the current configuration
-3. Added support for minimizing to system tray
-4. Unified rule templates:
-    - Simple groups for lightweight users
-    - Multi-region groups
-    - Full rule groups for advanced users
-5. Web scraping and import/export modules from version 0.2 are not yet included
-
-## Todo / Future Plans
-
-- Web scraping module
-- Import/export module
-- Bug fixes
 
 ## Preview
 

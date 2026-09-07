@@ -4,7 +4,7 @@ import {clipboard, contextBridge, ipcRenderer, shell} from 'electron';
 import os from 'os';
 
 // tray相关
-contextBridge.exposeInMainWorld('pxTray', {
+contextBridge.exposeInMainWorld('pxCommon', {
     on: (name, callback) => {
         const eventName = 'px_' + name;
         // 移除旧监听器，确保只注册一次
@@ -12,6 +12,18 @@ contextBridge.exposeInMainWorld('pxTray', {
         ipcRenderer.on(eventName, (_event, ...value) => callback(...value));
     },
     emit: (name, ...value) => ipcRenderer.send('px_' + name, ...value)
+});
+
+// 深度链接相关
+contextBridge.exposeInMainWorld('pxDeepLink', {
+    onImportProfile: (callback) => {
+        // 移除旧监听器，确保只注册一次
+        ipcRenderer.removeAllListeners('import-profile-from-deeplink');
+        ipcRenderer.on('import-profile-from-deeplink', (_event, data) => callback(data));
+    },
+    notifyReady: () => {
+        ipcRenderer.send('deeplink-handler-ready');
+    }
 });
 
 
@@ -35,8 +47,9 @@ contextBridge.exposeInMainWorld('pxOs', () => {
     }
 });
 
-// 打开配置目录
-contextBridge.exposeInMainWorld('pxConfigDir', (url: string) => shell.openPath(url));
+// 打开配置目录 changePxConfigDir
+contextBridge.exposeInMainWorld('openPxConfigDir', (url: string) => shell.openPath(url));
+contextBridge.exposeInMainWorld('changePxConfigDir', (options = {}) => ipcRenderer.invoke('select-directory', options));
 
 // 获取剪贴板内容
 contextBridge.exposeInMainWorld('pxClipboard', () => clipboard.readText());

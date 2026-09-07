@@ -1,7 +1,25 @@
 <template>
-  <div class="mask" @click="webStore.dnd = false" v-show="webStore.dnd">
-    <h3>{{ t("drag.hear") }}</h3>
+  <div class="mask" @click="closeDnd" v-show="webStore.dnd">
+    <el-space direction="vertical">
+      <h3>
+        {{ t("drag.hear") }}
+      </h3>
+      <el-button
+          v-show="webStore.dSelect"
+          class="select"
+          @click.stop="triggerFileInput"
+      >
+        {{ $t('drag.select') }}
+      </el-button>
+    </el-space>
   </div>
+  <!-- 隐藏的 input -->
+  <input
+      ref="fileInputRef"
+      type="file"
+      class="hidden-input"
+      @change="handleFileChange"
+  />
 </template>
 
 <script setup lang="ts">
@@ -38,9 +56,55 @@ function preventDefault(e: any) {
   e.preventDefault();
 }
 
+function closeDnd() {
+  webStore.dnd = false
+  webStore.dSelect = false
+}
+
+const readFile = (file: any) => {
+  const reader = new FileReader();
+
+  reader.onload = async (event) => {
+    console.log(`Content of ${file.name}:`);
+    // console.log(event.target.result);
+
+    await pLoad(t("drag.add"), async () => {
+      const p = new Profile();
+      p.content = event.target.result;
+      p.title = file.name;
+      try {
+        const pList = await api.addProfileFromInput(p);
+        if (pList && pList.length > 0) {
+          webStore.dProfile = pList;
+          pSuccess(t("drag.success"));
+
+          // 发送订阅配置数据
+          api.getProfileList().then((list) => {
+            Events.Emit({
+              name: "profiles",
+              data: list,
+            });
+          });
+        }
+      } catch (e) {
+        if (e["message"]) {
+          pError(e["message"]);
+        }
+      }
+    });
+  };
+
+  reader.onerror = (error) => {
+    console.error(`Error reading ${file.name}:`, error);
+  };
+
+  // 使用 readAsText 方法读取文件内容
+  reader.readAsText(file);
+}
+
 function handleDrop(e: any) {
   e.preventDefault();
-  webStore.dnd = false;
+  closeDnd();
 
   const files = Array.from(e.dataTransfer.files);
   if (files.length > 1) {
@@ -48,46 +112,28 @@ function handleDrop(e: any) {
     return;
   }
 
-  files.forEach((file: any) => {
-    const reader = new FileReader();
+  files.forEach(readFile);
+}
 
-    reader.onload = async (event) => {
-      console.log(`Content of ${file.name}:`);
-      // console.log(event.target.result);
+// 引用 input DOM
+const fileInputRef = ref(null)
+// 点击按钮 → 触发文件选择
+const triggerFileInput = (e: any) => {
+  e.stopPropagation()
+  fileInputRef.value?.click()
+}
+// 文件选择后的处理
+const handleFileChange = (e: any) => {
+  e.preventDefault();
+  closeDnd();
 
-      await pLoad(t("drag.add"), async () => {
-        const p = new Profile();
-        p.content = event.target.result;
-        p.title = file.name;
-        try {
-          const pList = await api.addProfileFromInput(p);
-          if (pList && pList.length > 0) {
-            webStore.dProfile = pList;
-            pSuccess(t("drag.success"));
+  const files = e.target.files
+  if (!files || files.length === 0) {
+    return
+  }
 
-            // 发送订阅配置数据
-            api.getProfileList().then((list) => {
-              Events.Emit({
-                name: "profiles",
-                data: list,
-              });
-            });
-          }
-        } catch (e) {
-          if (e["message"]) {
-            pError(e["message"]);
-          }
-        }
-      });
-    };
-
-    reader.onerror = (error) => {
-      console.error(`Error reading ${file.name}:`, error);
-    };
-
-    // 使用 readAsText 方法读取文件内容
-    reader.readAsText(file);
-  });
+  readFile(files[0])
+  e.target.value = ''
 }
 </script>
 
@@ -116,4 +162,22 @@ h3 {
   padding-top: 70px;
   border-radius: 10px;
 }
+
+:deep(.el-button) {
+  padding: 2px 10px;
+  --el-button-bg-color: transparent;
+  --el-button-text-color: var(--text-color);
+  --el-button-hover-text-color: var(--left-item-selected-bg);
+  --el-button-hover-bg-color: var(--text-color)
+}
+
+.select {
+  margin-top: 20px;
+}
+
+
+.hidden-input {
+  display: none;
+}
+
 </style>

@@ -62,6 +62,7 @@ drag:
   size: Only allowed to import single file
   add: Importing...
   success: Import Success
+  select: Click here to select
 
 home:
   download: Download
@@ -112,6 +113,10 @@ setting:
     startup: Boot Startup
     dir: Config
     open: Open
+    change: Change
+    change-title: Select config directory
+    change-warn: The path must not contain "Pandora-Box-V3"
+    change-loading: Directory is being moved...
     import: Import
     export: Export
     update: Update
@@ -140,6 +145,7 @@ profiles:
   update: Update
   placeholder: Subscription, ShareLink, Yaml, Base64, Json
   home: Visit the Subscription Home Page
+  support: Visit the Support Page
   del-tip: In use, cannot be deleted
   edit:
     title: Title
@@ -157,6 +163,12 @@ profiles:
   switch:
     ing: Switching...
     success: Switch success
+  deeplink:
+    importing: Importing profile...
+    import-success: Profile imported successfully
+    import-failed: Failed to import profile
+    invalid-url: Invalid profile URL
+    invalid-url-format: Invalid URL format, must be HTTP or HTTPS
 
 rule:
   title: Rule
@@ -232,3 +244,20 @@ tray:
   proxy: Proxy
   tun: TUN
   quit: Quit
+
+shortcut:
+  title: Shortcuts
+  describe: Function Description
+  app:
+    title: App Shortcuts
+    on: Enable Shortcuts
+  global:
+    title: Global Shortcuts
+    on: Enable Global Shortcuts
+  null: None
+  show: Show
+  hide: Hide
+  double: Single-key shortcuts are not allowed
+  three: Global shortcuts must contain at least 3 keys
+  success: Registered successfully
+  error: Registration failed, may be already in use or invalid format

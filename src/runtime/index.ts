@@ -3,13 +3,13 @@ export const Events = {
     // 只向electron发消息
     Emit: ({name, data}: { name: string; data: any }) => {
         // @ts-ignore
-        window.pxTray.emit(name, data)
+        window.pxCommon.emit(name, data)
         console.log("emit========", name)
     },
     // 只收electron的消息
     On: (name: string, callback: (...args: any[]) => void) => {
         // @ts-ignore
-        window.pxTray.on(name, callback);
+        window.pxCommon.on(name, callback);
         console.log("on========", name)
     },
 };

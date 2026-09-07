@@ -1,15 +1,15 @@
 package handlers
 
 import (
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
+	"github.com/metacubex/chi"
+	"github.com/metacubex/chi/render"
+	"github.com/metacubex/http"
 	"github.com/metacubex/mihomo/hub/executor"
 	"github.com/metacubex/mihomo/log"
 	"github.com/snakem982/pandora-box/api/models"
 	"github.com/snakem982/pandora-box/internal"
 	"github.com/snakem982/pandora-box/pkg/cache"
 	"github.com/snakem982/pandora-box/pkg/constant"
-	"net/http"
 )
 
 func DNS(r chi.Router) {

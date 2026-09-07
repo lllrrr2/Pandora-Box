@@ -17,7 +17,7 @@ const MIN_SUBTITLE_CONTRAST_BG = 4.0; // 副标题与背景的最小对比度
 const MAX_SUBTITLE_CONTRAST_ATTEMPTS = 6; // 调整副标题对比度的最大尝试次数
 
 // 图片加载常量
-const IMAGE_LOAD_TIMEOUT = 15000; // 15秒超时
+const IMAGE_LOAD_TIMEOUT = 30000; // 30秒超时
 const DEFAULT_BACKGROUND_IMAGE = "url('/images/default.jpg')";
 
 // 色相偏移常量
@@ -63,8 +63,8 @@ const SUBTITLE_HUE_SHIFT_WHITE = 10;
 const SUBTITLE_HUE_SHIFT_BLACK = 15;
 
 // body-blur-color 常量
-const BODY_BLUR_BLACK_ALPHA = 0.22;
-const BODY_BLUR_WHITE_ALPHA = 0.15;
+const BODY_BLUR_BLACK_ALPHA = 0.16;
+const BODY_BLUR_WHITE_ALPHA = 0.10;
 const BODY_BLUR_MIX_RATIO = 0.3;
 const BODY_BLUR_LUMINANCE_MULTIPLIER_WHITE = 0.85;
 const BODY_BLUR_LUMINANCE_MULTIPLIER_BLACK = 1.15;

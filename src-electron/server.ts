@@ -58,6 +58,12 @@ export const startServer = (c1: Function, c2: Function) => {
     });
 }
 
+// **重启服务器**
+export const reStartServer = (c1: Function, c2: Function) => {
+    goFlag = c1
+    c2(listenAddr)
+}
+
 // 获取端口密钥
 export const storeInfo = {
     port: () => storedPort,

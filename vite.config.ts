@@ -1,4 +1,5 @@
 import {defineConfig} from 'vite'
+// @ts-ignore
 import vue from '@vitejs/plugin-vue'
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from "unplugin-icons/resolver";

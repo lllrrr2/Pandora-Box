@@ -4,14 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/metacubex/mihomo/adapter"
-	"github.com/metacubex/mihomo/common/convert"
-	"github.com/metacubex/mihomo/config"
-	"github.com/metacubex/mihomo/log"
-	"github.com/snakem982/pandora-box/api/models"
-	"github.com/snakem982/pandora-box/pkg/constant"
-	"github.com/snakem982/pandora-box/pkg/utils"
-	"gopkg.in/yaml.v3"
 	"math/big"
 	"net/http"
 	"net/url"
@@ -20,6 +12,15 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/metacubex/mihomo/adapter"
+	"github.com/metacubex/mihomo/common/convert"
+	"github.com/metacubex/mihomo/config"
+	"github.com/metacubex/mihomo/log"
+	"github.com/snakem982/pandora-box/api/models"
+	"github.com/snakem982/pandora-box/pkg/constant"
+	"github.com/snakem982/pandora-box/pkg/utils"
+	"gopkg.in/yaml.v3"
 )
 
 // 保存文件
@@ -38,6 +39,7 @@ func MapsToProxies(ray []map[string]any) ([]map[string]any, error) {
 	mutex := sync.Mutex{}
 
 	proxies := make([]map[string]any, 0)
+	seen := make(map[string]bool) // 存储已经出现过的 name 值
 	for _, m := range ray {
 		proxy := m
 		pool.SubmitWithTimeout(func(done chan struct{}) {
@@ -51,7 +53,11 @@ func MapsToProxies(ray []map[string]any) ([]map[string]any, error) {
 			_, err := adapter.ParseProxy(proxy)
 			if err == nil {
 				mutex.Lock()
-				proxies = append(proxies, proxy)
+				proxyName := proxy["name"].(string)
+				if !seen[proxyName] {
+					seen[proxyName] = true
+					proxies = append(proxies, proxy)
+				}
 				mutex.Unlock()
 			} else {
 				marshal, err2 := json.Marshal(proxy)
@@ -146,6 +152,8 @@ func Resolve(content string, profile *models.Profile, refresh bool) error {
 			if err1 != nil {
 				return yamlError
 			} else {
+				// 去重
+				rails = Deduplicate(rails)
 				saveProfile(rails, profile)
 				return nil
 			}
@@ -184,6 +192,11 @@ func changeProvidersPath(baseDir, subDir string, config *config.RawConfig) (find
 	dir := fmt.Sprintf("./%s/%s/", baseDir, subDir)
 	proxyProviders := config.ProxyProvider
 	for _, provider := range proxyProviders {
+		if val, findType := provider["type"]; findType {
+			if val != "http" {
+				continue
+			}
+		}
 
 		if path, findPath := provider["path"]; findPath {
 			provider["path"] = dir + getProviderBase("provider", path.(string))
@@ -198,6 +211,11 @@ func changeProvidersPath(baseDir, subDir string, config *config.RawConfig) (find
 
 	ruleProviders := config.RuleProvider
 	for _, ruleProvider := range ruleProviders {
+		if val, findType := ruleProvider["type"]; findType {
+			if val != "http" {
+				continue
+			}
+		}
 
 		if path, findPath := ruleProvider["path"]; findPath {
 			ruleProvider["path"] = dir + getProviderBase("ruleset", path.(string))
@@ -303,6 +321,10 @@ func ParseHeaders(header http.Header, url string, profile *models.Profile) {
 	// 主页
 	if val := header.Get("Profile-Web-Page-Url"); val != "" {
 		profile.Home = val
+	}
+
+	if val := header.Get("Support-Url"); val != "" {
+		profile.Support = val
 	}
 
 }

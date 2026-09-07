@@ -5,8 +5,8 @@ import {app} from 'electron';
 import AutoLaunch from 'auto-launch';
 import log from './log';
 import {storeGet, storeSet} from './store';
+import {AppName} from "./common";
 
-const APP_NAME = 'Pandora-Box';
 const BOOT_FLAG = '--boot-launch';
 
 let autoLauncher = createAutoLauncher();
@@ -16,7 +16,7 @@ let autoLauncher = createAutoLauncher();
  */
 function createAutoLauncher(): AutoLaunch {
     return new AutoLaunch({
-        name: APP_NAME,
+        name: AppName,
         path: app.getPath('exe'),
         args: [BOOT_FLAG],
     });
